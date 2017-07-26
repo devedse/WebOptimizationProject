@@ -52,14 +52,15 @@ namespace WebOptimizationProject
             if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
             {
                 //This is a repository from me, so we don't want to fork it.
-                await git.RunHubCommand($"push origin HEAD:WebOptimizationProject");
+                await git.RunHubCommand($"push origin HEAD:{featureName}");
                 await git.RunHubCommand("pull-request -m \"The Web Optimization Project compressed all your images!\"");
 
             }
             else
             {
                 await git.RunHubCommand("fork");
-                await git.RunHubCommand($"push origin HEAD:WebOptimizationProject");
+                await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
+                await git.RunHubCommand($"push thefork");
                 await git.RunHubCommand("pull-request -m \"The Web Optimization Project compressed all your images!\"");
             }
 
