@@ -1,8 +1,10 @@
-﻿using DeveImageOptimizer.FileProcessing;
+﻿using DeveImageOptimizer;
+using DeveImageOptimizer.FileProcessing;
 using DeveImageOptimizer.Helpers;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WebOptimizationProject.Configuration;
 using WebOptimizationProject.Helpers;
@@ -16,10 +18,53 @@ namespace WebOptimizationProject
             Console.WriteLine("For this tool to work you need to have both GIT and HUB installed.");
 
             //Gogo("devedse", "ImageTest").Wait();
-            Gogo("desjoerd", "sdfg-aspnetcore").Wait();
+            //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
+
+            Testje().Wait();
+
+        }
+
+        public static async Task<string> GetDescriptionForPullRequest()
+        {
+            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var templateText = await Task.Run(() => File.ReadAllText(filePath));
+
+            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
+            templateText = templateText.Replace("{DateTimeOfOptimization}", DateTime.UtcNow.ToString());
+            templateText = templateText.Replace("{TotalBytesSaved}", "????");
+
+            var optimizedFilesTable = new StringBuilder();
+
+            optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved");
+            optimizedFilesTable.AppendLine("-- | -- | -- | --");
+            optimizedFilesTable.AppendLine("Testje.txt | 10kb | 1KB | 9kb");
+            optimizedFilesTable.AppendLine("Blah.png | 293kb | 281kb | 12kb");
+            optimizedFilesTable.AppendLine("SuperPicture.JPG | 2384kb | 150kb | 2134kb");
+
+            templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
 
 
+            return templateText;
+        }
 
+        public static async Task Testje()
+        {
+            Directory.SetCurrentDirectory(@"C:\XGit\WebOptimizationProject\WebOptimizationProject\bin\Debug\netcoreapp1.1\ClonedRepos\sdfg-aspnetcore");
+
+            var config = ConfigHelper.GetConfig();
+            var git = new GitHandler(config);
+
+
+            File.WriteAllText("Testje.txt", $"{DateTime.Now}: This is just a test file. Don't accept my pull request, it's just for testing.");
+
+            await git.RunHubCommand("add .");
+            await git.RunHubCommand("status");
+            await git.RunHubCommand("commit -m \"Just a test commit, don't accept my pull request :)\"");
+            await git.RunHubCommand("push thefork");
+
+            var desc = await GetDescriptionForPullRequest();
+
+            await git.PullRequest("This is a test pull request from the Web Optimization Project", desc);
         }
 
         public static async Task Gogo(string repositoryOwner, string repositoryName)

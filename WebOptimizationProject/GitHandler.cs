@@ -31,6 +31,15 @@ namespace WebOptimizationProject
             return cloneingDir;
         }
 
+        public async Task PullRequest(string message, string description)
+        {
+            var stringForPullRequest = $"pull-request -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
+
+            stringForPullRequest = stringForPullRequest.Replace("\r", "");
+
+            await RunHubCommand(stringForPullRequest);
+        }
+
         public async Task RunGitCommand(string command)
         {
             var psi = new ProcessStartInfo("git", command);
