@@ -12,7 +12,7 @@ namespace WebOptimizationProject
 {
     public static class PullRequestTemplateHandler
     {
-        public static async Task<string> GetDescriptionForPullRequest(List<OptimizedFileResult> optimizedFileResults)
+        public static async Task<string> GetDescriptionForPullRequest(IEnumerable<OptimizedFileResult> optimizedFileResults)
         {
             var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));

@@ -20,9 +20,9 @@ namespace WebOptimizationProject
             Console.WriteLine("For this tool to work you need to have both GIT and HUB installed.");
 
             //Gogo("devedse", "ImageTest").Wait();
-            //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
+            Gogo("desjoerd", "sdfg-aspnetcore").Wait();
 
-            Testje().Wait();
+            //Testje().Wait();
 
         }
 
@@ -55,37 +55,40 @@ namespace WebOptimizationProject
             Directory.SetCurrentDirectory(dirOfClonedRepos);
             var git = new GitHandler(config);
 
-            var clonedRepo = Path.Combine(Directory.GetCurrentDirectory(), repositoryName);
+            //var clonedRepo = Path.Combine(Directory.GetCurrentDirectory(), repositoryName);
 
-            if (true)
-            {
-                clonedRepo = await git.GitClone(repositoryOwner, repositoryName);
-                var worked = await GoOptimize(clonedRepo, config);
-            }
+            var clonedRepo = await git.GitClone(dirOfClonedRepos, repositoryOwner, repositoryName);
+            Directory.SetCurrentDirectory(clonedRepo);
+
             string featureName = "WebOptimizationProject";
 
+            //Incase it already exists we want to upate it to the latest version
+            await git.RunHubCommand($"pull origin HEAD:{featureName}");
+
+            var optimizedFileResults = await GoOptimize(clonedRepo, config);
 
 
 
 
-            Directory.SetCurrentDirectory(clonedRepo);
             await git.RunHubCommand($"checkout -b {featureName}");
             await git.RunHubCommand("add .");
             await git.RunHubCommand("commit -m \"Wop losslessly compressed your images.\"");
+
+            var descriptionForPullRequest = await PullRequestTemplateHandler.GetDescriptionForPullRequest(optimizedFileResults);
 
             if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
             {
                 //This is a repository from me, so we don't want to fork it.
                 await git.RunHubCommand($"push origin HEAD:{featureName}");
-                await git.RunHubCommand("pull-request -m \"The Web Optimization Project compressed all your images!\"");
-
+                await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
             }
             else
             {
                 await git.RunHubCommand("fork");
+
                 await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
                 await git.RunHubCommand($"push thefork");
-                await git.RunHubCommand("pull-request -m \"The Web Optimization Project compressed all your images!\"");
+                await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
             }
 
             //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
@@ -96,15 +99,15 @@ namespace WebOptimizationProject
             //git 
         }
 
-        private static async Task<bool> GoOptimize(string dir, Config config)
+        private static async Task<IEnumerable<OptimizedFileResult>> GoOptimize(string dir, Config config)
         {
-            var processingState = new FilesProcessingState();
+            //var processingState = new FilesProcessingState();
 
             var fileOptimizer = new FileOptimizerProcessor(config.FileOptimizerFullExePath, FolderHelperMethods.TempDirectoryForTests.Value);
-            var fileProcessor = new FileProcessor(fileOptimizer, processingState);
-            await fileProcessor.ProcessDirectory(dir);
+            var fileProcessor = new FileProcessor(fileOptimizer, null);
+            var optimizedFileResults = await fileProcessor.ProcessDirectory(dir);
 
-            return processingState.FailedFiles.Any();
+            return optimizedFileResults;
         }
     }
 }

@@ -19,11 +19,12 @@ namespace WebOptimizationProject
             this.config = config;
         }
 
-        public async Task<string> GitClone(string userName, string repositoryName)
+        public async Task<string> GitClone(string repositoriesDir, string userName, string repositoryName)
         {
-            var cloneingDir = Path.Combine(Directory.GetCurrentDirectory(), repositoryName);
-            await DirectoryHelper.DeleteDirectory(cloneingDir);
-            Console.WriteLine("Nu2");
+            Directory.SetCurrentDirectory(repositoriesDir);
+            var cloneingDir = Path.Combine(repositoriesDir, repositoryName);
+            //await DirectoryHelper.DeleteDirectory(cloneingDir);
+
             var totalUrl = $"https://github.com/{userName}/{repositoryName}.git";
 
             await RunGitCommand($"clone {totalUrl}");

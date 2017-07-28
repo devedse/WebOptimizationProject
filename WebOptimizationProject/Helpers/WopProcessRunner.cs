@@ -8,10 +8,10 @@ namespace WebOptimizationProject.Helpers
 {
     public static class WopProcessRunner
     {
-        public static Task RunProcessAsync(ProcessStartInfo processStartInfo)
+        public static Task<int> RunProcessAsync(ProcessStartInfo processStartInfo)
         {
             // there is no non-generic TaskCompletionSource
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<int>();
 
             var process = new Process
             {
@@ -21,7 +21,7 @@ namespace WebOptimizationProject.Helpers
 
             process.Exited += (sender, args) =>
             {
-                tcs.SetResult(true);
+                tcs.SetResult(process.ExitCode);
                 process.Dispose();
             };
 
