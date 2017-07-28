@@ -1,7 +1,9 @@
 ﻿using DeveImageOptimizer;
 using DeveImageOptimizer.FileProcessing;
 using DeveImageOptimizer.Helpers;
+using DeveImageOptimizer.State;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,29 +26,6 @@ namespace WebOptimizationProject
 
         }
 
-        public static async Task<string> GetDescriptionForPullRequest()
-        {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
-            var templateText = await Task.Run(() => File.ReadAllText(filePath));
-
-            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
-            templateText = templateText.Replace("{DateTimeOfOptimization}", DateTime.UtcNow.ToString());
-            templateText = templateText.Replace("{TotalBytesSaved}", "????");
-
-            var optimizedFilesTable = new StringBuilder();
-
-            optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved");
-            optimizedFilesTable.AppendLine("-- | -- | -- | --");
-            optimizedFilesTable.AppendLine("Testje.txt | 10kb | 1KB | 9kb");
-            optimizedFilesTable.AppendLine("Blah.png | 293kb | 281kb | 12kb");
-            optimizedFilesTable.AppendLine("SuperPicture.JPG | 2384kb | 150kb | 2134kb");
-
-            templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
-
-
-            return templateText;
-        }
-
         public static async Task Testje()
         {
             Directory.SetCurrentDirectory(@"C:\XGit\WebOptimizationProject\WebOptimizationProject\bin\Debug\netcoreapp1.1\ClonedRepos\sdfg-aspnetcore");
@@ -62,7 +41,7 @@ namespace WebOptimizationProject
             await git.RunHubCommand("commit -m \"Just a test commit, don't accept my pull request :)\"");
             await git.RunHubCommand("push thefork");
 
-            var desc = await GetDescriptionForPullRequest();
+            var desc = await PullRequestTemplateHandler.GetDescriptionForPullRequest(new List<OptimizedFileResult>() { new OptimizedFileResult("test.png", true, 150, 30, new List<string>()) });
 
             await git.PullRequest("This is a test pull request from the Web Optimization Project", desc);
         }
