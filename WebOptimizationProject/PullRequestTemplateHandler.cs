@@ -24,7 +24,7 @@ namespace WebOptimizationProject
             var optimizedFilesTable = new StringBuilder();
 
             optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Successful");
-            optimizedFilesTable.AppendLine("-- | -- | -- | --");
+            optimizedFilesTable.AppendLine("-- | -- | -- | -- | --");
             foreach (var fileResult in optimizedFileResults)
             {
                 var fileName = Path.GetFileName(fileResult.Path);
