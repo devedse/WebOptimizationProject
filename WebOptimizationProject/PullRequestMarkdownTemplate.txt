@@ -1,5 +1,6 @@
-﻿# Web Optimization Project
+﻿# Web Optimization Project (Beta)
 
+[WebOptimizationProject](https://www.github.com/devedse/weboptimizationproject)
 The Web Optimization Project is a project that will automatically optimizes files in git repositories by compressing them losslessly :smile:. This project was created by Devedse in an effort to save the world! :smirk:
 
 ## Optimization
