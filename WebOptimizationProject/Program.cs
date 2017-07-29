@@ -20,7 +20,8 @@ namespace WebOptimizationProject
             Console.WriteLine("For this tool to work you need to have both GIT and HUB installed.");
 
             //Gogo("devedse", "ImageTest").Wait();
-            Gogo("desjoerd", "sdfg-aspnetcore").Wait();
+            //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
+            Gogo("desjoerd", "test-image-optimization").Wait();
 
             //Testje().Wait();
 
