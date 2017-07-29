@@ -36,14 +36,19 @@ namespace WebOptimizationProject
 
             File.WriteAllText("Testje.txt", $"{DateTime.Now}: This is just a test file. Don't accept my pull request, it's just for testing.");
 
+
+            var files = new List<OptimizedFileResult>() { new OptimizedFileResult("test.png", true, 150, 30, new List<string>()) };
+
+            var commitDesc = await TemplatesHandler.GetDescriptionForCommit(files);
+
             await git.RunHubCommand("add .");
             await git.RunHubCommand("status");
-            await git.RunHubCommand("commit -m \"Just a test commit, don't accept my pull request :)\"");
+            await git.Commit("Wop optimized this repository", commitDesc);
             await git.RunHubCommand("push thefork");
 
-            var desc = await PullRequestTemplateHandler.GetDescriptionForPullRequest(new List<OptimizedFileResult>() { new OptimizedFileResult("test.png", true, 150, 30, new List<string>()) });
+            var desc = await TemplatesHandler.GetDescriptionForPullRequest();
 
-            await git.PullRequest("This is a test pull request from the Web Optimization Project", desc);
+            await git.PullRequest("The Web Optimization Project has optimized your repository!", desc);
         }
 
         public static async Task Gogo(string repositoryOwner, string repositoryName)
@@ -68,13 +73,13 @@ namespace WebOptimizationProject
             var optimizedFileResults = await GoOptimize(clonedRepo, config);
 
 
-
+            var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit(optimizedFileResults);
 
             await git.RunHubCommand($"checkout -b {featureName}");
             await git.RunHubCommand("add .");
-            await git.RunHubCommand("commit -m \"Wop losslessly compressed your images.\"");
+            await git.Commit("Wop optimized this repository", descriptionForCommit);
 
-            var descriptionForPullRequest = await PullRequestTemplateHandler.GetDescriptionForPullRequest(optimizedFileResults);
+            var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest();
 
             if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
             {

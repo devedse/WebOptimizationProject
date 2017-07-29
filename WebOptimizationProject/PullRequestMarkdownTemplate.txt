@@ -1,15 +1,14 @@
-﻿# IMPORTANT NOTE
-This is just a test version of the Web Optimization Project, no files have been actually optimized and this pull request should be ignored! :smile:.
+﻿# Web Optimization Project
 
-## Introduction
-The Web Optimization Project is a project that will automatically optimize files in git repositories. It does this by losslessly compressing images (and maybe in the future other files as well).
+Version |
+-- |
+{Version} |
 
-File extensions supported:
+The Web Optimization Project is a project that will automatically optimizes files in git repositories by compressing them losslessly :smile:.
+
+## Optimization
+The Web Optimization Project optimized this repository. Currently the following filetypes are supported:
 {SupportedFileExtensions}
 
-## Statistics
-Date and Time of optimization: {DateTimeOfOptimization}
-Total bytes saved: {TotalBytesSaved}
-
-## Files optimized in this repository
-{OptimizedFiles}
+## Optimized files
+See the commits to find out what files were optimized, and how much bytes were saved.

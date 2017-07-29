@@ -5,20 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WebOptimizationProject
 {
-    public static class PullRequestTemplateHandler
+    public static class TemplatesHandler
     {
-        public static async Task<string> GetDescriptionForPullRequest(IEnumerable<OptimizedFileResult> optimizedFileResults)
+        public static async Task<string> GetDescriptionForCommit(IEnumerable<OptimizedFileResult> optimizedFileResults)
         {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
-            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
-            templateText = templateText.Replace("{DateTimeOfOptimization}", DateTime.UtcNow.ToString());
+            templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
             templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize)));
 
             var optimizedFilesTable = new StringBuilder();
@@ -35,6 +35,16 @@ namespace WebOptimizationProject
             }
 
             templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
+
+            return templateText;
+        }
+
+        public static async Task<string> GetDescriptionForPullRequest()
+        {
+            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var templateText = await Task.Run(() => File.ReadAllText(filePath));
+
+            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
 
             return templateText;
         }

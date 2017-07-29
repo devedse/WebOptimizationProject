@@ -32,6 +32,15 @@ namespace WebOptimizationProject
             return cloneingDir;
         }
 
+        public async Task Commit(string message, string description)
+        {
+            var stringForCommit = $"commit -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
+
+            stringForCommit = stringForCommit.Replace("\r", "");
+
+            await RunHubCommand(stringForCommit);
+        }
+
         public async Task PullRequest(string message, string description)
         {
             var stringForPullRequest = $"pull-request -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
