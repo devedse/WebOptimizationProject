@@ -72,11 +72,10 @@ namespace WebOptimizationProject
 
             var optimizedFileResults = await GoOptimize(clonedRepo, config);
 
-
-            var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit(optimizedFileResults);
-
             await git.RunHubCommand($"checkout -b {featureName}");
             await git.RunHubCommand("add .");
+
+            var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit(optimizedFileResults);
             await git.Commit("Wop optimized this repository", descriptionForCommit);
 
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest();
@@ -106,8 +105,6 @@ namespace WebOptimizationProject
 
         private static async Task<IEnumerable<OptimizedFileResult>> GoOptimize(string dir, Config config)
         {
-            //var processingState = new FilesProcessingState();
-
             var fileOptimizer = new FileOptimizerProcessor(config.FileOptimizerFullExePath, FolderHelperMethods.TempDirectoryForTests.Value);
             var fileProcessor = new FileProcessor(fileOptimizer, null);
             var optimizedFileResults = await fileProcessor.ProcessDirectory(dir);

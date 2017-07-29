@@ -1,14 +1,11 @@
 ﻿# Web Optimization Project
 
-Version |
--- |
-{Version} |
-
-The Web Optimization Project is a project that will automatically optimizes files in git repositories by compressing them losslessly :smile:.
+The Web Optimization Project is a project that will automatically optimizes files in git repositories by compressing them losslessly :smile:. This project was created by Devedse in an effort to save the world! :smirk:
 
 ## Optimization
-The Web Optimization Project optimized this repository. Currently the following filetypes are supported:
-{SupportedFileExtensions}
 
-## Optimized files
+The Web Optimization Project optimized this repository. All optimizations (compressions) are done losslessly and no quality / data is lost.
+
+## Optimized files and more details
+
 See the commits to find out what files were optimized, and how much bytes were saved.

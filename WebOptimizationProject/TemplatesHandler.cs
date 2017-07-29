@@ -18,6 +18,7 @@ namespace WebOptimizationProject
             var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
+            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
             templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize)));
 
@@ -43,8 +44,6 @@ namespace WebOptimizationProject
         {
             var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
-
-            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
 
             return templateText;
         }

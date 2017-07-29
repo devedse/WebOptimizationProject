@@ -32,36 +32,36 @@ namespace WebOptimizationProject
             return cloneingDir;
         }
 
-        public async Task Commit(string message, string description)
+        public async Task<int> Commit(string message, string description)
         {
             var stringForCommit = $"commit -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
 
             stringForCommit = stringForCommit.Replace("\r", "");
 
-            await RunHubCommand(stringForCommit);
+            return await RunHubCommand(stringForCommit);
         }
 
-        public async Task PullRequest(string message, string description)
+        public async Task<int> PullRequest(string message, string description)
         {
             var stringForPullRequest = $"pull-request -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
 
             stringForPullRequest = stringForPullRequest.Replace("\r", "");
 
-            await RunHubCommand(stringForPullRequest);
+            return await RunHubCommand(stringForPullRequest);
         }
 
-        public async Task RunGitCommand(string command)
+        public async Task<int> RunGitCommand(string command)
         {
             var psi = new ProcessStartInfo("git", command);
 
-            await WopProcessRunner.RunProcessAsync(psi);
+            return await WopProcessRunner.RunProcessAsync(psi);
         }
 
-        public async Task RunHubCommand(string command)
+        public async Task<int> RunHubCommand(string command)
         {
             var psi = new ProcessStartInfo("hub", command);
 
-            await WopProcessRunner.RunProcessAsync(psi);
+            return await WopProcessRunner.RunProcessAsync(psi);
         }
     }
 }

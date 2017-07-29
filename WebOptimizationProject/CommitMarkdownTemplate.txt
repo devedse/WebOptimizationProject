@@ -1,10 +1,16 @@
 ﻿## Description
 
-This commit optimized the files in this repository.
+The Web Optimization Project optimized this repository. This commit contains the optimized files in this repository.
+
+Information |
+-- | --
+Version | {Version}
+Support file extension | {SupportedFileExtensions}
 
 ## Statistics
 
 Total bytes saved in this commit: {TotalBytesSaved}
 
 ## Files optimized in this repository
+
 {OptimizedFiles}
