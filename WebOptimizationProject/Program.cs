@@ -106,7 +106,7 @@ namespace WebOptimizationProject
 
         private static async Task<IEnumerable<OptimizedFileResult>> GoOptimize(string dir, Config config)
         {
-            var fileOptimizer = new FileOptimizerProcessor(config.FileOptimizerFullExePath, FolderHelperMethods.TempDirectoryForTests.Value);
+            var fileOptimizer = new FileOptimizerProcessor(config.FileOptimizerFullExePath, FolderHelperMethods.TempDirectory.Value);
             var fileProcessor = new FileProcessor(fileOptimizer, null);
             var optimizedFileResults = await fileProcessor.ProcessDirectory(dir);
 
