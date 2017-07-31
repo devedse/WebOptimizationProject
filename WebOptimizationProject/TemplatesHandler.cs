@@ -13,9 +13,21 @@ namespace WebOptimizationProject
 {
     public static class TemplatesHandler
     {
-        public static async Task<string> GetDescriptionForCommit(IEnumerable<OptimizedFileResult> optimizedFileResults)
+        public static async Task<string> GetDescriptionForPullRequest(IEnumerable<OptimizedFileResult> optimizedFileResults)
         {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var templateText = await Task.Run(() => File.ReadAllText(filePath));
+
+
+            var stringForCommitDetails = await GetCommitDescriptionForPullRequest(optimizedFileResults, 1);
+            templateText = templateText + Environment.NewLine + Environment.NewLine + stringForCommitDetails;
+
+            return templateText;
+        }
+
+        public static async Task<string> GetCommitDescriptionForPullRequest(IEnumerable<OptimizedFileResult> optimizedFileResults, int commitNumber)
+        {
+            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
             templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
@@ -35,14 +47,12 @@ namespace WebOptimizationProject
                 optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {fileResult.Successful}");
             }
 
-            templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
-
-            return templateText;
+            return optimizedFilesTable.ToString();
         }
 
-        public static async Task<string> GetDescriptionForPullRequest()
+        public static async Task<string> GetDescriptionForCommit()
         {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
             return templateText;

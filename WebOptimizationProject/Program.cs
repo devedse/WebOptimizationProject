@@ -40,14 +40,14 @@ namespace WebOptimizationProject
 
             var files = new List<OptimizedFileResult>() { new OptimizedFileResult("test.png", true, 150, 30, new List<string>()) };
 
-            var commitDesc = await TemplatesHandler.GetDescriptionForCommit(files);
+            var commitDesc = await TemplatesHandler.GetDescriptionForCommit();
 
             await git.RunHubCommand("add .");
             await git.RunHubCommand("status");
             await git.Commit("Wop optimized this repository", commitDesc);
             await git.RunHubCommand("push thefork");
 
-            var desc = await TemplatesHandler.GetDescriptionForPullRequest();
+            var desc = await TemplatesHandler.GetDescriptionForPullRequest(files);
 
             await git.PullRequest("The Web Optimization Project has optimized your repository!", desc);
         }
@@ -76,10 +76,10 @@ namespace WebOptimizationProject
             await git.RunHubCommand($"checkout -b {featureName}");
             await git.RunHubCommand("add .");
 
-            var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit(optimizedFileResults);
+            var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
             await git.Commit("Wop optimized this repository", descriptionForCommit);
 
-            var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest();
+            var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest(optimizedFileResults);
 
             if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
             {

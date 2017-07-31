@@ -7,6 +7,4 @@ The Web Optimization Project is a project that will automatically optimizes file
 
 The Web Optimization Project optimized this repository. All optimizations (compressions) are done losslessly and no quality / data is lost. This is also verified afterwards by the Wop so you can be sure that your images are exactly the same :smile:.
 
-## Optimized files and more details
-
-See the commits to find out what files were optimized, and how much bytes were saved.
+## Commits

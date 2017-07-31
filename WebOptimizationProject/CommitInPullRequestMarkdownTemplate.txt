@@ -1,0 +1,14 @@
+﻿### Commit {CommitNumber}
+
+Information |
+-- | --
+Version | {Version}
+Support file extension | {SupportedFileExtensions}
+
+#### Statistics
+
+Total bytes saved in this commit: {TotalBytesSaved}
+
+#### Files optimized in this repository
+
+{OptimizedFiles}
