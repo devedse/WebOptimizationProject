@@ -30,6 +30,7 @@ namespace WebOptimizationProject
             var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
+            templateText = templateText.Replace("{CommitNumber}", commitNumber.ToString());
             templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
             templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize)));
@@ -47,7 +48,9 @@ namespace WebOptimizationProject
                 optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {fileResult.Successful}");
             }
 
-            return optimizedFilesTable.ToString();
+            templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
+
+            return templateText;
         }
 
         public static async Task<string> GetDescriptionForCommit()

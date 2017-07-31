@@ -52,6 +52,20 @@ namespace WebOptimizationProject
             await git.PullRequest("The Web Optimization Project has optimized your repository!", desc);
         }
 
+        private static async Task<IEnumerable<OptimizedFileResult>> GoOptimizeStub(string dir, Config config)
+        {
+            var testjeFile = Path.Combine(dir, "Testje.txt");
+            File.WriteAllText(testjeFile, $"{DateTime.Now}: This is just a test file. Don't accept my pull request, it's just for testing.");
+
+            var lijstje = new List<OptimizedFileResult>();
+
+            lijstje.Add(new OptimizedFileResult(testjeFile, true, 1000000, 900000, new List<string>()));
+
+            await Task.Delay(10);
+
+            return lijstje;
+        }
+
         public static async Task Gogo(string repositoryOwner, string repositoryName)
         {
             var config = ConfigHelper.GetConfig();
@@ -71,9 +85,12 @@ namespace WebOptimizationProject
             //Incase it already exists we want to upate it to the latest version
             await git.RunHubCommand($"pull origin HEAD:{featureName}");
 
-            var optimizedFileResults = await GoOptimize(clonedRepo, config);
+
+            //var optimizedFileResults = await GoOptimize(clonedRepo, config);
+            var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
 
             await git.RunHubCommand($"checkout -b {featureName}");
+            await git.RunHubCommand($"checkout {featureName}");
             await git.RunHubCommand("add .");
 
             var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
@@ -93,7 +110,9 @@ namespace WebOptimizationProject
 
                 await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
                 await git.RunHubCommand($"push thefork");
-                await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+                var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+
+                Console.WriteLine("Pullrequeststate: " + pullRequestState);
             }
 
             //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
