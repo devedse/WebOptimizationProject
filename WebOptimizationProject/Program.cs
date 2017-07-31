@@ -113,6 +113,11 @@ namespace WebOptimizationProject
                 var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
 
                 Console.WriteLine("Pullrequeststate: " + pullRequestState);
+
+                if (pullRequestState == 1)
+                {
+                    //Do an update of the pull request instead.
+                }
             }
 
             //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
