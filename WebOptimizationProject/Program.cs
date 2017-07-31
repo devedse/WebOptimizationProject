@@ -81,44 +81,62 @@ namespace WebOptimizationProject
             Directory.SetCurrentDirectory(clonedRepo);
 
             string featureName = "WebOptimizationProject";
+            
+
+            await git.RunHubCommand("fork");
+
+            await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
+
+            //Fetch everything in my repository
+            await git.RunHubCommand("fetch --all");
+
+            //Go to master
+            await git.RunHubCommand("checkout master");
 
             //Incase it already exists we want to upate it to the latest version
-            await git.RunHubCommand($"pull origin HEAD:{featureName}");
+            await git.RunHubCommand($"pull origin master");
+            await git.RunHubCommand($"push thefork master -u");
 
+            await git.RunHubCommand($"checkout -b {featureName}");
+            await git.RunHubCommand($"checkout {featureName}");
+
+            await git.RunHubCommand("merge --strategy-option=theirs master");
+
+            await git.RunHubCommand($"push thefork {featureName} -u");
 
             //var optimizedFileResults = await GoOptimize(clonedRepo, config);
             var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
 
-            await git.RunHubCommand($"checkout -b {featureName}");
-            await git.RunHubCommand($"checkout {featureName}");
             await git.RunHubCommand("add .");
 
             var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
             await git.Commit("Wop optimized this repository", descriptionForCommit);
+            await git.RunHubCommand($"push thefork");
+
 
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest(optimizedFileResults);
 
-            if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
+            var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+
+            Console.WriteLine("Pullrequeststate: " + pullRequestState);
+
+            if (pullRequestState == 1)
             {
-                //This is a repository from me, so we don't want to fork it.
-                await git.RunHubCommand($"push origin HEAD:{featureName}");
-                await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+                //Do an update of the pull request instead.
             }
-            else
-            {
-                await git.RunHubCommand("fork");
 
-                await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
-                await git.RunHubCommand($"push thefork");
-                var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
-
-                Console.WriteLine("Pullrequeststate: " + pullRequestState);
-
-                if (pullRequestState == 1)
-                {
-                    //Do an update of the pull request instead.
-                }
-            }
+            //if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
+            //{
+            //    //This is a repository from me, so we don't want to fork it.
+            //    await git.RunHubCommand($"push origin HEAD:{featureName}");
+            //    await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+            //}
+            //else
+            //{
+                
+                
+         
+            //}
 
             //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
             //await git.RunGitCommand($"request-pull master https://github.com/devedse/ImageTest.git {featureName}");
