@@ -112,8 +112,8 @@ namespace WebOptimizationProject
                 await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
             }
 
-            //var optimizedFileResults = await GoOptimize(clonedRepo, config);
-            var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
+            var optimizedFileResults = await GoOptimize(clonedRepo, config);
+            //var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
 
             await git.RunHubCommand("add .");
 
