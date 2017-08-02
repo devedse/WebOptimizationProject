@@ -92,18 +92,25 @@ namespace WebOptimizationProject
             await git.RunHubCommand("fetch --all");
 
             //Go to master
-            await git.RunHubCommand("checkout master");
+            await git.RunHubCommand($"checkout {config.GithubUserName}/master");
+            await git.RunHubCommand($"merge --strategy-option=theirs origin/master");
+            await git.RunHubCommand($"push {config.GithubUserName} {config.GithubUserName}/master");
 
-            //Incase it already exists we want to upate it to the latest version
-            await git.RunHubCommand($"pull origin master");
-            await git.RunHubCommand($"push {config.GithubUserName} master -u");
+            //var createdBranch = await git.RunHubCommand($"branch {featureName}");
 
-            await git.RunHubCommand($"checkout -b {featureName}");
-            await git.RunHubCommand($"checkout {featureName}");
+            var branchAlreadyExists = await git.RunHubCommand($"checkout --track -b {featureName} {config.GithubUserName}/{featureName}");
 
-            await git.RunHubCommand("merge --strategy-option=theirs master");
-
-            await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
+            if (branchAlreadyExists == 0)
+            {
+                //await git.RunHubCommand($"checkout {config.GithubUserName}/WebOptimizationProject");
+                await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
+                await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
+            }
+            else
+            {
+                await git.RunHubCommand($"checkout -b {featureName}");
+                await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
+            }
 
             //var optimizedFileResults = await GoOptimize(clonedRepo, config);
             var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
@@ -112,7 +119,7 @@ namespace WebOptimizationProject
 
             var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
             await git.Commit("Wop optimized this repository", descriptionForCommit);
-            await git.RunHubCommand($"push {config.GithubUserName}");
+            await git.RunHubCommand($"push");
 
 
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest(optimizedFileResults);
