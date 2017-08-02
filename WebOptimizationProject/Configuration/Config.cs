@@ -8,6 +8,18 @@ namespace WebOptimizationProject.Configuration
     {
         public string FileOptimizerFullExePath { get; set; } = @"C:\Program Files\FileOptimizer\FileOptimizer64.exe";
         public string ClonedRepositoriesDirectoryName { get; set; } = "ClonedRepos";
-        public string GithubUserName { get; set; } = "Devedse";
+
+        private string githubusername = "Devedse";
+        public string GithubUserName
+        {
+            get
+            {
+                return githubusername.ToLowerInvariant();
+            }
+            set
+            {
+                githubusername = value;
+            }
+        }
     }
 }

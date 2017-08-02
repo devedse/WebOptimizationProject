@@ -81,11 +81,12 @@ namespace WebOptimizationProject
             Directory.SetCurrentDirectory(clonedRepo);
 
             string featureName = "WebOptimizationProject";
-            
+
 
             await git.RunHubCommand("fork");
 
-            await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
+            await git.RunHubCommand($"remote set-url {config.GithubUserName} https://github.com/{config.GithubUserName}/{repositoryName}.git");
+            //await git.RunHubCommand($"remote add thefork https://github.com/{config.GithubUserName}/{repositoryName}.git");
 
             //Fetch everything in my repository
             await git.RunHubCommand("fetch --all");
@@ -95,14 +96,14 @@ namespace WebOptimizationProject
 
             //Incase it already exists we want to upate it to the latest version
             await git.RunHubCommand($"pull origin master");
-            await git.RunHubCommand($"push thefork master -u");
+            await git.RunHubCommand($"push {config.GithubUserName} master -u");
 
             await git.RunHubCommand($"checkout -b {featureName}");
             await git.RunHubCommand($"checkout {featureName}");
 
             await git.RunHubCommand("merge --strategy-option=theirs master");
 
-            await git.RunHubCommand($"push thefork {featureName} -u");
+            await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
 
             //var optimizedFileResults = await GoOptimize(clonedRepo, config);
             var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
@@ -111,7 +112,7 @@ namespace WebOptimizationProject
 
             var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
             await git.Commit("Wop optimized this repository", descriptionForCommit);
-            await git.RunHubCommand($"push thefork");
+            await git.RunHubCommand($"push {config.GithubUserName}");
 
 
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest(optimizedFileResults);
@@ -133,9 +134,9 @@ namespace WebOptimizationProject
             //}
             //else
             //{
-                
-                
-         
+
+
+
             //}
 
             //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
