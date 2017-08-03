@@ -23,6 +23,9 @@ namespace WebOptimizationProject
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
             Gogo("desjoerd", "test-image-optimization").Wait();
 
+            Console.WriteLine("Application finished, press any key to continue...");
+            Console.ReadKey();
+
             //Testje().Wait();
 
         }
