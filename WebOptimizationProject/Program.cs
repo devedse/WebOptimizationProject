@@ -21,7 +21,8 @@ namespace WebOptimizationProject
 
             //Gogo("devedse", "ImageTest").Wait();
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
-            Gogo("desjoerd", "test-image-optimization").Wait();
+            //Gogo("desjoerd", "test-image-optimization").Wait();
+            Gogo("kinosang", "piwik").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
@@ -73,7 +74,12 @@ namespace WebOptimizationProject
         {
             var config = ConfigHelper.GetConfig();
 
-            var dirOfClonedRepos = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, config.ClonedRepositoriesDirectoryName);
+            string dirOfClonedRepos = config.ClonedRepositoriesDirectoryName;
+            if (!Path.IsPathRooted(dirOfClonedRepos))
+            {
+                dirOfClonedRepos = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, config.ClonedRepositoriesDirectoryName);
+            }
+
             Directory.CreateDirectory(dirOfClonedRepos);
             Directory.SetCurrentDirectory(dirOfClonedRepos);
             var git = new GitHandler(config);
