@@ -103,7 +103,7 @@ namespace WebOptimizationProject
             //Go to master
             await git.RunHubCommand($"checkout {config.GithubUserName}/master");
             await git.RunHubCommand($"merge --strategy-option=theirs origin/master");
-            await git.RunHubCommand($"push {config.GithubUserName} {config.GithubUserName}/master");
+            await git.RunHubCommand($"push {config.GithubUserName} HEAD:master");
 
             //var createdBranch = await git.RunHubCommand($"branch {featureName}");
 
