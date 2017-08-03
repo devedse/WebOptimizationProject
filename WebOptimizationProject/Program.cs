@@ -107,9 +107,9 @@ namespace WebOptimizationProject
 
             //var createdBranch = await git.RunHubCommand($"branch {featureName}");
 
-            var branchAlreadyExists = await git.RunHubCommand($"checkout --track -b {featureName} {config.GithubUserName}/{featureName}");
+            var wasAbleToAddTrackedBranch = await git.RunHubCommand($"checkout --track -b {featureName} {config.GithubUserName}/{featureName}");
 
-            if (branchAlreadyExists == 0)
+            if (wasAbleToAddTrackedBranch == 0)
             {
                 //await git.RunHubCommand($"checkout {config.GithubUserName}/WebOptimizationProject");
                 await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
@@ -117,7 +117,15 @@ namespace WebOptimizationProject
             }
             else
             {
-                await git.RunHubCommand($"checkout -b {featureName}");
+                var createdNewBranch = await git.RunHubCommand($"checkout -b {featureName}");
+                if (createdNewBranch == 0)
+                {
+                }
+                else
+                {
+                    await git.RunHubCommand($"checkout {featureName}");
+                    await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
+                }
                 await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
             }
 
