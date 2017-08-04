@@ -7,7 +7,7 @@ namespace WebOptimizationProject.Configuration
     public class Config
     {
         public string FileOptimizerFullExePath { get; set; } = @"C:\Program Files\FileOptimizer\FileOptimizer64.exe";
-        public string ClonedRepositoriesDirectoryName { get; set; } = "ClonedRepos";
+        public string ClonedRepositoriesDirectoryName { get; set; } = @"C:\XWOP";
 
         private string githubusername = "Devedse";
         public string GithubUserName

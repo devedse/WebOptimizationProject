@@ -21,7 +21,11 @@ namespace WebOptimizationProject
 
             //Gogo("devedse", "ImageTest").Wait();
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
-            Gogo("desjoerd", "test-image-optimization").Wait();
+            //Gogo("desjoerd", "test-image-optimization").Wait();
+            Gogo("kinosang", "piwik").Wait();
+
+            Console.WriteLine("Application finished, press any key to continue...");
+            Console.ReadKey();
 
             //Testje().Wait();
 
@@ -70,7 +74,12 @@ namespace WebOptimizationProject
         {
             var config = ConfigHelper.GetConfig();
 
-            var dirOfClonedRepos = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, config.ClonedRepositoriesDirectoryName);
+            string dirOfClonedRepos = config.ClonedRepositoriesDirectoryName;
+            if (!Path.IsPathRooted(dirOfClonedRepos))
+            {
+                dirOfClonedRepos = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, config.ClonedRepositoriesDirectoryName);
+            }
+
             Directory.CreateDirectory(dirOfClonedRepos);
             Directory.SetCurrentDirectory(dirOfClonedRepos);
             var git = new GitHandler(config);
@@ -92,27 +101,42 @@ namespace WebOptimizationProject
             await git.RunHubCommand("fetch --all");
 
             //Go to master
-            await git.RunHubCommand("checkout master");
+            await git.RunHubCommand($"checkout {config.GithubUserName}/master");
+            await git.RunHubCommand($"merge --strategy-option=theirs origin/master");
+            await git.RunHubCommand($"push {config.GithubUserName} HEAD:master");
 
-            //Incase it already exists we want to upate it to the latest version
-            await git.RunHubCommand($"pull origin master");
-            await git.RunHubCommand($"push {config.GithubUserName} master -u");
+            //var createdBranch = await git.RunHubCommand($"branch {featureName}");
 
-            await git.RunHubCommand($"checkout -b {featureName}");
-            await git.RunHubCommand($"checkout {featureName}");
+            var wasAbleToAddTrackedBranch = await git.RunHubCommand($"checkout --track -b {featureName} {config.GithubUserName}/{featureName}");
 
-            await git.RunHubCommand("merge --strategy-option=theirs master");
+            if (wasAbleToAddTrackedBranch == 0)
+            {
+                //await git.RunHubCommand($"checkout {config.GithubUserName}/WebOptimizationProject");
+                await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
+                await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
+            }
+            else
+            {
+                var createdNewBranch = await git.RunHubCommand($"checkout -b {featureName}");
+                if (createdNewBranch == 0)
+                {
+                }
+                else
+                {
+                    await git.RunHubCommand($"checkout {featureName}");
+                    await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
+                }
+                await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
+            }
 
-            await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
-
-            //var optimizedFileResults = await GoOptimize(clonedRepo, config);
-            var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
+            var optimizedFileResults = await GoOptimize(clonedRepo, config);
+            //var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
 
             await git.RunHubCommand("add .");
 
             var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
             await git.Commit("Wop optimized this repository", descriptionForCommit);
-            await git.RunHubCommand($"push {config.GithubUserName}");
+            await git.RunHubCommand($"push");
 
 
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest(optimizedFileResults);
