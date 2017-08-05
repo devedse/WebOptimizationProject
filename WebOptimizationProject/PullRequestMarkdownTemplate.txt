@@ -2,6 +2,9 @@
 
 The [Web Optimization Project](https://www.github.com/devedse/weboptimizationproject) is a project that will automatically optimizes files in git repositories by compressing them losslessly. This project was created by [Devedse](https://github.com/devedse) in an effort to save the world! :smirk:
 
+If you have any questions, feel free to create an issue or join the gitter chat:
+[![Join the chat at https://gitter.im/WebOptimizationProject/Lobby](https://badges.gitter.im/WebOptimizationProject/Lobby.svg)](https://gitter.im/WebOptimizationProject/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Optimization
 
 The Web Optimization Project optimized this repository. All optimizations (compressions) are done losslessly and no quality / data is lost. This is also verified afterwards by the Wop so you can be sure that your images are exactly the same.
