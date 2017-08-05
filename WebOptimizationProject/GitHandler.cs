@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebOptimizationProject.Configuration;
@@ -52,16 +53,33 @@ namespace WebOptimizationProject
 
         public async Task<int> RunGitCommand(string command)
         {
-            var psi = new ProcessStartInfo("git", command);
-
-            return await WopProcessRunner.RunProcessAsync(psi);
+            return await WopProcessRunner.RunProcessAsync("git", command);
         }
 
         public async Task<int> RunHubCommand(string command)
         {
-            var psi = new ProcessStartInfo("hub", command);
+            return await WopProcessRunner.RunProcessAsync("hub", command);
+        }
 
-            return await WopProcessRunner.RunProcessAsync(psi);
+        public async Task<string> GetHeadBranch()
+        {
+            var outList = new List<ProcessOutputLine>();
+            var result = await WopProcessRunner.RunProcessAsyncWithResults("git", "symbolic-ref refs/remotes/origin/HEAD", outList);
+            if (result != 0)
+            {
+                Console.WriteLine("Couldn't determine head branch, command failed.");
+                return null;
+            }
+            var theName = outList.FirstOrDefault(t => t.Type == ProcessOutputLineType.Log && t.Txt.ToLowerInvariant().Contains("origin"));
+            if (theName == null || string.IsNullOrWhiteSpace(theName.Txt) || theName.Txt.Count(t => t == '/') == 0)
+            {
+                Console.WriteLine($"Couldn't determine head branch, output isn't as expected: {theName}");
+                return null;
+            }
+
+            var lio = theName.Txt.LastIndexOf('/');
+            var headBranchName = theName.Txt.Substring(lio + 1);
+            return headBranchName;
         }
     }
 }

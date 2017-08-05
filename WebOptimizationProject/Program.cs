@@ -22,7 +22,8 @@ namespace WebOptimizationProject
             //Gogo("devedse", "ImageTest").Wait();
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
             //Gogo("desjoerd", "test-image-optimization").Wait();
-            Gogo("kinosang", "piwik").Wait();
+            //Gogo("facebook", "react").Wait();
+            Gogo("vuejs", "vue").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
@@ -70,7 +71,7 @@ namespace WebOptimizationProject
             return lijstje;
         }
 
-        public static async Task Gogo(string repositoryOwner, string repositoryName)
+        public static async Task Gogo(string repositoryOwner, string repositoryName, string branchName = null)
         {
             var config = ConfigHelper.GetConfig();
 
@@ -91,6 +92,14 @@ namespace WebOptimizationProject
 
             string featureName = "WebOptimizationProject";
 
+            if (branchName == null)
+            {
+                branchName = await git.GetHeadBranch();
+                if (branchName == null)
+                {
+                    throw new Exception("ERROR, couldn't determine branchname");
+                }
+            }
 
             await git.RunHubCommand("fork");
 
@@ -101,9 +110,9 @@ namespace WebOptimizationProject
             await git.RunHubCommand("fetch --all");
 
             //Go to master
-            await git.RunHubCommand($"checkout {config.GithubUserName}/master");
-            await git.RunHubCommand($"merge --strategy-option=theirs origin/master");
-            await git.RunHubCommand($"push {config.GithubUserName} HEAD:master");
+            await git.RunHubCommand($"checkout {config.GithubUserName}/{branchName}");
+            await git.RunHubCommand($"merge --strategy-option=theirs origin/{branchName}");
+            await git.RunHubCommand($"push {config.GithubUserName} HEAD:{branchName}");
 
             //var createdBranch = await git.RunHubCommand($"branch {featureName}");
 
@@ -112,7 +121,7 @@ namespace WebOptimizationProject
             if (wasAbleToAddTrackedBranch == 0)
             {
                 //await git.RunHubCommand($"checkout {config.GithubUserName}/WebOptimizationProject");
-                await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
+                await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/{branchName}");
                 await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
             }
             else
@@ -124,7 +133,7 @@ namespace WebOptimizationProject
                 else
                 {
                     await git.RunHubCommand($"checkout {featureName}");
-                    await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/master");
+                    await git.RunHubCommand($"merge --strategy-option=theirs {config.GithubUserName}/{branchName}");
                 }
                 await git.RunHubCommand($"push {config.GithubUserName} {featureName} -u");
             }
