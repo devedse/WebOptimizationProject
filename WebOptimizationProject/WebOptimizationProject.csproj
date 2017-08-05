@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeveImageOptimizer" Version="1.0.67" />
+    <PackageReference Include="DeveImageOptimizer" Version="1.0.70" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
