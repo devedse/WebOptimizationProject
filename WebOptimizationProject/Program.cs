@@ -23,7 +23,7 @@ namespace WebOptimizationProject
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
             //Gogo("desjoerd", "test-image-optimization").Wait();
             //Gogo("facebook", "react").Wait();
-            Gogo("vuejs", "vue").Wait();
+            Gogo("b4winckler", "macvim").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
@@ -147,37 +147,40 @@ namespace WebOptimizationProject
             await git.Commit("Wop optimized this repository", descriptionForCommit);
             await git.RunHubCommand($"push");
 
-
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest(optimizedFileResults);
 
-            var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
-
-            Console.WriteLine("Pullrequeststate: " + pullRequestState);
-
-            if (pullRequestState == 1)
+            //Only create pull request if there were actually any successful optimizations
+            if (optimizedFileResults.Any(t => t.Successful) && optimizedFileResults.Sum(t => t.OriginalSize) > optimizedFileResults.Sum(t => t.OptimizedSize))
             {
-                //Do an update of the pull request instead.
+                var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+
+                Console.WriteLine("Pullrequeststate: " + pullRequestState);
+
+                if (pullRequestState == 1)
+                {
+                    //Do an update of the pull request instead.
+                }
+
+                //if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
+                //{
+                //    //This is a repository from me, so we don't want to fork it.
+                //    await git.RunHubCommand($"push origin HEAD:{featureName}");
+                //    await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
+                //}
+                //else
+                //{
+
+
+
+                //}
+
+                //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
+                //await git.RunGitCommand($"request-pull master https://github.com/devedse/ImageTest.git {featureName}");
+
+                //Git add .
+                //Git commit -m "hoi"
+                //git 
             }
-
-            //if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
-            //{
-            //    //This is a repository from me, so we don't want to fork it.
-            //    await git.RunHubCommand($"push origin HEAD:{featureName}");
-            //    await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
-            //}
-            //else
-            //{
-
-
-
-            //}
-
-            //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
-            //await git.RunGitCommand($"request-pull master https://github.com/devedse/ImageTest.git {featureName}");
-
-            //Git add .
-            //Git commit -m "hoi"
-            //git 
         }
 
         private static async Task<IEnumerable<OptimizedFileResult>> GoOptimize(string dir, Config config)
