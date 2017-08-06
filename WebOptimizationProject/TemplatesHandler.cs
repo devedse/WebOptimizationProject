@@ -36,12 +36,13 @@ namespace WebOptimizationProject
 
             var totalBytesBefore = optimizedFileResults.Sum(t => t.OriginalSize);
             var totalBytesSaved = optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize);
-            var bytesRemaining = totalBytesBefore - totalBytesSaved;
-            var percentageRemaining = Math.Round((double)bytesRemaining / (double)totalBytesBefore * 100.0, 2);
+            var totalBytesAfter = totalBytesBefore - totalBytesSaved;
+            var percentageRemaining = Math.Round((double)totalBytesAfter / (double)totalBytesBefore * 100.0, 2);
 
             templateText = templateText.Replace("{TotalBytesBefore}", BytesToString(totalBytesBefore));
-            templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(totalBytesSaved));
+            templateText = templateText.Replace("{TotalBytesAfter}", BytesToString(totalBytesAfter));
             templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
+            templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(totalBytesSaved));
 
             var optimizedFilesTable = new StringBuilder();
 
