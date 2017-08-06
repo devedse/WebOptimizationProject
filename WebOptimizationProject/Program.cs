@@ -23,7 +23,7 @@ namespace WebOptimizationProject
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
             //Gogo("desjoerd", "test-image-optimization").Wait();
             //Gogo("facebook", "react").Wait();
-            Gogo("b4winckler", "macvim").Wait();
+            Gogo("ashleymcnamara", "gophers").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
@@ -43,7 +43,7 @@ namespace WebOptimizationProject
             File.WriteAllText("Testje.txt", $"{DateTime.Now}: This is just a test file. Don't accept my pull request, it's just for testing.");
 
 
-            var files = new List<OptimizedFileResult>() { new OptimizedFileResult("test.png", true, 150, 30, new List<string>()) };
+            var files = new List<OptimizedFileResult>() { new OptimizedFileResult("test.png", true, 150, 30, TimeSpan.FromSeconds(5.6), new List<string>()) };
 
             var commitDesc = await TemplatesHandler.GetDescriptionForCommit();
 
@@ -64,7 +64,7 @@ namespace WebOptimizationProject
 
             var lijstje = new List<OptimizedFileResult>();
 
-            lijstje.Add(new OptimizedFileResult(testjeFile, true, 1000000, 900000, new List<string>()));
+            lijstje.Add(new OptimizedFileResult(testjeFile, true, 1000000, 900000, TimeSpan.FromSeconds(9.5), new List<string>()));
 
             await Task.Delay(10);
 

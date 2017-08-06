@@ -39,22 +39,29 @@ namespace WebOptimizationProject
             var totalBytesAfter = totalBytesBefore - totalBytesSaved;
             var percentageRemaining = Math.Round((double)totalBytesAfter / (double)totalBytesBefore * 100.0, 2);
 
+            var timeSpan = TimeSpan.Zero;
+            foreach (var duration in optimizedFileResults.Select(t => t.Duration))
+            {
+                timeSpan += duration;
+            }
+
             templateText = templateText.Replace("{TotalBytesBefore}", BytesToString(totalBytesBefore));
             templateText = templateText.Replace("{TotalBytesAfter}", BytesToString(totalBytesAfter));
             templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
             templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(totalBytesSaved));
+            templateText = templateText.Replace("{OptimizationDuration}", SecondsToString((long)timeSpan.TotalSeconds));
 
             var optimizedFilesTable = new StringBuilder();
 
-            optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Successful");
-            optimizedFilesTable.AppendLine("-- | -- | -- | -- | --");
+            optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Duration | Successful");
+            optimizedFilesTable.AppendLine("-- | -- | -- | -- | -- | --");
             foreach (var fileResult in optimizedFileResults)
             {
                 var fileName = Path.GetFileName(fileResult.Path);
                 var originalSize = BytesToString(fileResult.OriginalSize);
                 var optimizedSize = BytesToString(fileResult.OptimizedSize);
                 var bytesSaved = BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
-                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {fileResult.Successful}");
+                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.Successful}");
             }
 
             templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
@@ -78,7 +85,20 @@ namespace WebOptimizationProject
             long bytes = Math.Abs(byteCount);
             int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
             double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            return (Math.Sign(byteCount) * num).ToString() + suf[place];
+            var theNumber = Math.Sign(byteCount) * num;
+            return $"{theNumber}{suf[place]}";
+        }
+
+        public static String SecondsToString(long seconds)
+        {
+            string[] suf = { "Second", "Minute", "Hour" };
+            if (seconds == 0)
+                return "0 " + suf[0];
+            long bytes = Math.Abs(seconds);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 60)));
+            double num = Math.Round(bytes / Math.Pow(60, place), 1);
+            var theNumber = Math.Sign(seconds) * num;
+            return $"{theNumber} {suf[place]}{(num == 1 ? "" : "s")}";
         }
     }
 }

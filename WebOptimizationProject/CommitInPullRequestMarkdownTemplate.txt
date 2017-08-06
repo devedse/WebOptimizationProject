@@ -13,6 +13,7 @@ Total size before optimization | {TotalBytesBefore}
 Total size after optimization | {TotalBytesAfter}
 Optimized size compared to old | {PercentageRemaining}
 Total bytes saved | {TotalBytesSaved}
+Time taken for optimization | {OptimizationDuration}
 
 #### Files optimized in this repository
 
