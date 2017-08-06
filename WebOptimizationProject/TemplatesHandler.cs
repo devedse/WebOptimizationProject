@@ -33,7 +33,15 @@ namespace WebOptimizationProject
             templateText = templateText.Replace("{CommitNumber}", commitNumber.ToString());
             templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
-            templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize)));
+
+            var totalBytesBefore = optimizedFileResults.Sum(t => t.OriginalSize);
+            var totalBytesSaved = optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize);
+            var bytesRemaining = totalBytesBefore - totalBytesSaved;
+            var percentageRemaining = Math.Round((double)bytesRemaining / (double)totalBytesBefore * 100.0, 2);
+
+            templateText = templateText.Replace("{TotalBytesBefore}", BytesToString(totalBytesBefore));
+            templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(totalBytesSaved));
+            templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
 
             var optimizedFilesTable = new StringBuilder();
 

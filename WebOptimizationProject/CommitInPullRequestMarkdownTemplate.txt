@@ -9,7 +9,9 @@ Support file extension | {SupportedFileExtensions}
 
 Stats | Value
 -- | --
-Total bytes saved in this commit | {TotalBytesSaved}
+Total bytes of processed files | {TotalBytesBefore}
+Total bytes saved | {TotalBytesSaved}
+Optimized size compared to old | {PercentageRemaining}
 
 #### Files optimized in this repository
 
