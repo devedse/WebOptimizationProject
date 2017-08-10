@@ -57,7 +57,11 @@ namespace WebOptimizationProject
             optimizedFilesTable.AppendLine("-- | -- | -- | -- | -- | --");
             foreach (var fileResult in optimizedFileResults)
             {
-                var fileName = Path.GetFileName(fileResult.Path);
+                //Reduce length of filename
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileResult.Path).Substring(0, 20);
+                var extension = Path.GetExtension(fileResult.Path);
+                var fileName = $"{fileNameWithoutExtension}..{extension}";
+
                 var originalSize = BytesToString(fileResult.OriginalSize);
                 var optimizedSize = BytesToString(fileResult.OptimizedSize);
                 var bytesSaved = BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
