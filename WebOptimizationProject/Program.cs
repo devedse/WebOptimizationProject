@@ -23,7 +23,7 @@ namespace WebOptimizationProject
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
             //Gogo("desjoerd", "test-image-optimization").Wait();
             //Gogo("facebook", "react").Wait();
-            Gogo("ashleymcnamara", "gophers").Wait();
+            Gogo("shoheiyokoyama", "Assets").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
