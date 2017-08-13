@@ -58,9 +58,14 @@ namespace WebOptimizationProject
             foreach (var fileResult in optimizedFileResults)
             {
                 //Reduce length of filename
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileResult.Path).Substring(0, 20);
-                var extension = Path.GetExtension(fileResult.Path);
-                var fileName = $"{fileNameWithoutExtension}..{extension}";
+                string fileName = Path.GetFileName(@"C:\1234567890123456789012.txt");
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                if (fileNameWithoutExtension.Length > 20)
+                {
+                    var fileNameWithoutExtensionShortened = fileNameWithoutExtension.Substring(0, Math.Min(fileNameWithoutExtension.Length, 20));
+                    var extension = Path.GetExtension(fileName);
+                    fileName = $"{fileNameWithoutExtensionShortened}..{extension}";
+                }
 
                 var originalSize = BytesToString(fileResult.OriginalSize);
                 var optimizedSize = BytesToString(fileResult.OptimizedSize);
