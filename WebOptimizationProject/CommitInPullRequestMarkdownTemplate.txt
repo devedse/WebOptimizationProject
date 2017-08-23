@@ -10,7 +10,7 @@ Support file extension | {SupportedFileExtensions}
 Stats | Value
 -- | --
 Total optimizable files | {OptimizableFileCount}
-Files optimized successfully | {FilesOptimizedSuccessfully}
+Files optimized successfully (size reduced) | {FilesOptimizedSuccessfully}
 Files already fully optimized | {FilesAlreadyOptimized}
 Files that failed to be optimized | {FilesFailedOptimization}
 Total size before optimization | {TotalBytesBefore}

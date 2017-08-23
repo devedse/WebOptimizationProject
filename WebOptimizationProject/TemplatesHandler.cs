@@ -46,7 +46,7 @@ namespace WebOptimizationProject
             }
 
             templateText = templateText.Replace("{OptimizableFileCount}", optimizedFileResults.Count().ToString());
-            templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.Successful).ToString());
+            templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize > t.OptimizedSize).ToString());
             templateText = templateText.Replace("{FilesAlreadyOptimized}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize == t.OptimizedSize).ToString());
             templateText = templateText.Replace("{FilesFailedOptimization}", optimizedFileResults.Count(t => !t.Successful).ToString());
             templateText = templateText.Replace("{TotalBytesBefore}", BytesToString(totalBytesBefore));
