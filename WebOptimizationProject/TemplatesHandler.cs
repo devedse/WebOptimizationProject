@@ -13,14 +13,14 @@ namespace WebOptimizationProject
 {
     public static class TemplatesHandler
     {
-        public static async Task<string> GetDescriptionForPullRequest(IEnumerable<OptimizedFileResult> optimizedFileResults)
+        public static async Task<string> GetDescriptionForPullRequest()
         {
             var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
 
-            var stringForCommitDetails = await GetCommitDescriptionForPullRequest(optimizedFileResults, 1);
-            templateText = templateText + Environment.NewLine + Environment.NewLine + stringForCommitDetails;
+            //var stringForCommitDetails = await GetCommitDescriptionForPullRequest(optimizedFileResults, 1);
+            //templateText = templateText + Environment.NewLine + Environment.NewLine + stringForCommitDetails;
 
             return templateText;
         }

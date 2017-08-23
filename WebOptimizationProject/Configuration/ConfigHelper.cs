@@ -15,14 +15,23 @@ namespace WebOptimizationProject.Configuration
         {
             var configPath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, configFileName);
 
-            if (!File.Exists(configPath))
-            {
-                var serializedJson = JsonConvert.SerializeObject(new Config());
-                File.WriteAllText(configPath, serializedJson);
+            Config config = new Config();
+            string txt = null;
 
-                Console.WriteLine($"Created new config file at: {configPath}. Ensure it contains the right values.");
+            if (File.Exists(configPath))
+            {
+                txt = File.ReadAllText(configPath);
+                config = JsonConvert.DeserializeObject<Config>(txt);
             }
-            return JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
+
+            var serializedJson = JsonConvert.SerializeObject(config);
+            if (!serializedJson.Equals(txt))
+            {
+                Console.WriteLine($"Updated/created config file at: {configPath}. Ensure it contains the right values.");
+                File.WriteAllText(configPath, serializedJson);
+            }
+
+            return config;
         }
     }
 }
