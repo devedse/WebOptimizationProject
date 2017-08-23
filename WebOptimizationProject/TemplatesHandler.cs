@@ -45,6 +45,10 @@ namespace WebOptimizationProject
                 timeSpan += duration;
             }
 
+            templateText = templateText.Replace("{OptimizableFileCount}", optimizedFileResults.Count().ToString());
+            templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.Successful).ToString());
+            templateText = templateText.Replace("{FilesAlreadyOptimized}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize == t.OptimizedSize).ToString());
+            templateText = templateText.Replace("{FilesFailedOptimization}", optimizedFileResults.Count(t => !t.Successful).ToString());
             templateText = templateText.Replace("{TotalBytesBefore}", BytesToString(totalBytesBefore));
             templateText = templateText.Replace("{TotalBytesAfter}", BytesToString(totalBytesAfter));
             templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
@@ -55,7 +59,8 @@ namespace WebOptimizationProject
 
             optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Duration | Successful");
             optimizedFilesTable.AppendLine("-- | -- | -- | -- | -- | --");
-            foreach (var fileResult in optimizedFileResults)
+            var filesToPrint = optimizedFileResults.Where(t => t.OriginalSize > t.OptimizedSize || !t.Successful).OrderByDescending(t => t.OriginalSize - t.OptimizedSize);
+            foreach (var fileResult in filesToPrint)
             {
                 //Reduce length of filename
                 string fileName = Path.GetFileName(fileResult.Path);

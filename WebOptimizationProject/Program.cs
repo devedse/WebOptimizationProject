@@ -27,10 +27,11 @@ namespace WebOptimizationProject
 
             //Gogo("devedse", "ImageTest").Wait();
             //Gogo("desjoerd", "sdfg-aspnetcore").Wait();
-            Gogo("desjoerd", "test-image-optimization").Wait();
-            //Gogo("facebook", "react").Wait();
+            //Gogo("desjoerd", "test-image-optimization").Wait();
+            //Gogo("facebook", "react").GetAwaiter().GetResult();
             //Gogo("shoheiyokoyama", "Assets").Wait();
             //Gogo("antonfirsov", "Imagesharp.Tests.Images").Wait();
+            Gogo("alexellis", "faas").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
@@ -325,31 +326,6 @@ namespace WebOptimizationProject
                 };
 
                 await githubClient.PullRequest.Update(repositoryOwner, repositoryName, obtainedPullRequest.Number, pullRequestUpdate);
-
-
-
-
-               
-
-                //if (string.Equals(repositoryOwner, config.GithubUserName, StringComparison.OrdinalIgnoreCase))
-                //{
-                //    //This is a repository from me, so we don't want to fork it.
-                //    await git.RunHubCommand($"push origin HEAD:{featureName}");
-                //    await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
-                //}
-                //else
-                //{
-
-
-
-                //}
-
-                //await git.RunGitCommand("push --set-upstream origin WebOptimizationProject");
-                //await git.RunGitCommand($"request-pull master https://github.com/devedse/ImageTest.git {featureName}");
-
-                //Git add .
-                //Git commit -m "hoi"
-                //git 
             }
         }
 
