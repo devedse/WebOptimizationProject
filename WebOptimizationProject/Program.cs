@@ -31,7 +31,7 @@ namespace WebOptimizationProject
             //Gogo("facebook", "react").GetAwaiter().GetResult();
             //Gogo("shoheiyokoyama", "Assets").Wait();
             //Gogo("antonfirsov", "Imagesharp.Tests.Images").Wait();
-            Gogo("alexellis", "faas").Wait();
+            Gogo("docker", "kitematic").Wait();
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();
@@ -93,7 +93,7 @@ namespace WebOptimizationProject
 
         public static async Task<PullRequest> GetPullRequest(GitHubClient github, string repositoryOwner, string repositoryName, Config config)
         {
-
+            Console.WriteLine($"Getting pullrequest with RepoOwner: {repositoryOwner} RepoName: {repositoryName}");
 
             //var allPullRequests = await github.Search.SearchIssues(new SearchIssuesRequest($"state%3Aopen+author%3A{config.GithubUserName}+type%3Apr"));
 
@@ -307,7 +307,19 @@ namespace WebOptimizationProject
                 var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
                 Console.WriteLine("Pullrequeststate: " + pullRequestState);
 
-                var obtainedPullRequest = await GetPullRequest(githubClient, repositoryOwner, repositoryName, config);
+                PullRequest obtainedPullRequest = null;
+                for (int i = 0; i < 3; i++)
+                {
+                    obtainedPullRequest = await GetPullRequest(githubClient, repositoryOwner, repositoryName, config);
+                    if (obtainedPullRequest != null)
+                    {
+                        break;
+                    }
+                    Console.WriteLine("Couldn't find Pull Request. Waiting and retrying...");
+                    await Task.Delay(10000);
+                }
+
+                Console.WriteLine($"Found pull request: {obtainedPullRequest.HtmlUrl}");
 
                 var commitIdentifier = "### Commit ";
                 var splittedBody = obtainedPullRequest.Body.Split('\n');
