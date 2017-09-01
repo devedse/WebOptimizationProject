@@ -325,7 +325,7 @@ namespace WebOptimizationProject
                 var splittedBody = obtainedPullRequest.Body.Split('\n');
                 var commitCount = splittedBody.Count(t => t.StartsWith(commitIdentifier));
 
-                var descriptionForCommitInPr = await TemplatesHandler.GetCommitDescriptionForPullRequest(optimizedFileResults, commitCount + 1);
+                var descriptionForCommitInPr = await TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, commitCount + 1);
 
                 var bodySb = new StringBuilder(obtainedPullRequest.Body);
                 bodySb.AppendLine();

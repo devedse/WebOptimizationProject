@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebOptimizationProject.Helpers;
 
 namespace WebOptimizationProject
 {
@@ -25,7 +26,7 @@ namespace WebOptimizationProject
             return templateText;
         }
 
-        public static async Task<string> GetCommitDescriptionForPullRequest(IEnumerable<OptimizedFileResult> optimizedFileResults, int commitNumber)
+        public static async Task<string> GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizedFileResult> optimizedFileResults, int commitNumber)
         {
             var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
@@ -70,6 +71,12 @@ namespace WebOptimizationProject
                     var fileNameWithoutExtensionShortened = fileNameWithoutExtension.Substring(0, Math.Min(fileNameWithoutExtension.Length, 20));
                     var extension = Path.GetExtension(fileName);
                     fileName = $"{fileNameWithoutExtensionShortened}..{extension}";
+                }
+
+                var relativeGitPath = RelativeGitPathHelper.GetRelativeGitPath(clonedRepoPath, fileResult.Path, branchName);
+                if (relativeGitPath != null)
+                {
+                    fileName = $"[{fileName}]({relativeGitPath})";
                 }
 
                 var originalSize = BytesToString(fileResult.OriginalSize);
