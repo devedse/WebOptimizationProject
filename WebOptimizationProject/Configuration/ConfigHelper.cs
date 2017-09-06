@@ -1,9 +1,7 @@
 ﻿using DeveImageOptimizer.Helpers;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace WebOptimizationProject.Configuration
 {
@@ -13,7 +11,7 @@ namespace WebOptimizationProject.Configuration
 
         public static Config GetConfig()
         {
-            var configPath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, configFileName);
+            var configPath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, configFileName);
 
             Config config = new Config();
             string txt = null;

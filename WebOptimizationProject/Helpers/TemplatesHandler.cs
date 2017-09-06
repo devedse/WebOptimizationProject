@@ -1,5 +1,4 @@
-﻿using DeveImageOptimizer;
-using DeveImageOptimizer.Helpers;
+﻿using DeveImageOptimizer.Helpers;
 using DeveImageOptimizer.State;
 using System;
 using System.Collections.Generic;
@@ -8,15 +7,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using WebOptimizationProject.Helpers;
 
-namespace WebOptimizationProject
+namespace WebOptimizationProject.Helpers
 {
     public static class TemplatesHandler
     {
         public static async Task<string> GetDescriptionForPullRequest()
         {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
 
@@ -28,11 +26,11 @@ namespace WebOptimizationProject
 
         public static async Task<string> GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizedFileResult> optimizedFileResults, int commitNumber)
         {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
             templateText = templateText.Replace("{CommitNumber}", commitNumber.ToString());
-            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", Constants.ValidExtensions));
+            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", DeveImageOptimizer.Constants.ValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
 
             var totalBytesBefore = optimizedFileResults.Sum(t => t.OriginalSize);
@@ -50,11 +48,11 @@ namespace WebOptimizationProject
             templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize > t.OptimizedSize).ToString());
             templateText = templateText.Replace("{FilesAlreadyOptimized}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize == t.OptimizedSize).ToString());
             templateText = templateText.Replace("{FilesFailedOptimization}", optimizedFileResults.Count(t => !t.Successful).ToString());
-            templateText = templateText.Replace("{TotalBytesBefore}", BytesToString(totalBytesBefore));
-            templateText = templateText.Replace("{TotalBytesAfter}", BytesToString(totalBytesAfter));
+            templateText = templateText.Replace("{TotalBytesBefore}", UomHelper.BytesToString(totalBytesBefore));
+            templateText = templateText.Replace("{TotalBytesAfter}", UomHelper.BytesToString(totalBytesAfter));
             templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
-            templateText = templateText.Replace("{TotalBytesSaved}", BytesToString(totalBytesSaved));
-            templateText = templateText.Replace("{OptimizationDuration}", SecondsToString((long)timeSpan.TotalSeconds));
+            templateText = templateText.Replace("{TotalBytesSaved}", UomHelper.BytesToString(totalBytesSaved));
+            templateText = templateText.Replace("{OptimizationDuration}", UomHelper.SecondsToString((long)timeSpan.TotalSeconds));
 
             var optimizedFilesTable = new StringBuilder();
 
@@ -79,10 +77,10 @@ namespace WebOptimizationProject
                     fileName = $"[{fileName}]({relativeGitPath})";
                 }
 
-                var originalSize = BytesToString(fileResult.OriginalSize);
-                var optimizedSize = BytesToString(fileResult.OptimizedSize);
-                var bytesSaved = BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
-                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.Successful}");
+                var originalSize = UomHelper.BytesToString(fileResult.OriginalSize);
+                var optimizedSize = UomHelper.BytesToString(fileResult.OptimizedSize);
+                var bytesSaved = UomHelper.BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
+                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {UomHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.Successful}");
             }
 
             templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
@@ -92,34 +90,10 @@ namespace WebOptimizationProject
 
         public static async Task<string> GetDescriptionForCommit()
         {
-            var filePath = Path.Combine(FolderHelperMethods.AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
             return templateText;
-        }
-
-        public static String BytesToString(long byteCount)
-        {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
-            if (byteCount == 0)
-                return "0" + suf[0];
-            long bytes = Math.Abs(byteCount);
-            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            var theNumber = Math.Sign(byteCount) * num;
-            return $"{theNumber}{suf[place]}";
-        }
-
-        public static String SecondsToString(long seconds)
-        {
-            string[] suf = { "Second", "Minute", "Hour" };
-            if (seconds == 0)
-                return "0 " + suf[0];
-            long bytes = Math.Abs(seconds);
-            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 60)));
-            double num = Math.Round(bytes / Math.Pow(60, place), 1);
-            var theNumber = Math.Sign(seconds) * num;
-            return $"{theNumber} {suf[place]}{(num == 1 ? "" : "s")}";
         }
     }
 }

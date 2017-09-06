@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 
 namespace WebOptimizationProject.Helpers
@@ -15,7 +12,6 @@ namespace WebOptimizationProject.Helpers
                 await Task.Run(() =>
                 {
                     Directory.Delete(dir, true);
-                    Console.WriteLine("NU1");
                 });
             }
         }

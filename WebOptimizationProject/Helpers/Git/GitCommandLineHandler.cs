@@ -1,21 +1,17 @@
-﻿using DeveImageOptimizer.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WebOptimizationProject.Configuration;
-using WebOptimizationProject.Helpers;
 
-namespace WebOptimizationProject
+namespace WebOptimizationProject.Helpers.Git
 {
-    public class GitHandler
+    public class GitCommandLineHandler
     {
         private readonly Config config;
 
-        public GitHandler(Config config)
+        public GitCommandLineHandler(Config config)
         {
             this.config = config;
         }
