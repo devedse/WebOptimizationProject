@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace WebOptimizationProject
+namespace WebOptimizationProject.Runner
 {
     class Program
     {
@@ -14,7 +14,7 @@ namespace WebOptimizationProject
         {
             Console.WriteLine("For this tool to work you need to have both GIT and HUB installed.");
 
-            await GitHubRepositoryOptimizer.GoOptimize("carlogeertse", "OOPDraw");
+            await GitHubRepositoryOptimizer.GoOptimize("Clowting", "OOPDraw");
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();

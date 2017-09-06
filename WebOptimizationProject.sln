@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOptimizationProject", "WebOptimizationProject\WebOptimizationProject.csproj", "{920D454E-B9E9-4E42-ADB1-0ED22BCB72C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOptimizationProject.Tests", "WebOptimizationProject.Tests\WebOptimizationProject.Tests.csproj", "{C0EC9777-80EA-4BED-B661-72234D1E6D69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebOptimizationProject.Tests", "WebOptimizationProject.Tests\WebOptimizationProject.Tests.csproj", "{C0EC9777-80EA-4BED-B661-72234D1E6D69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOptimizationProject.Runner", "WebOptimizationProject.Runner\WebOptimizationProject.Runner.csproj", "{E748191E-7FC5-405A-95AF-C3724D76E996}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C0EC9777-80EA-4BED-B661-72234D1E6D69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0EC9777-80EA-4BED-B661-72234D1E6D69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0EC9777-80EA-4BED-B661-72234D1E6D69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E748191E-7FC5-405A-95AF-C3724D76E996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E748191E-7FC5-405A-95AF-C3724D76E996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E748191E-7FC5-405A-95AF-C3724D76E996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E748191E-7FC5-405A-95AF-C3724D76E996}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
