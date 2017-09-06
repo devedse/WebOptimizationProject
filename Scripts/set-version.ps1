@@ -13,7 +13,7 @@ $PSScriptFilePath = (Get-Item $MyInvocation.MyCommand.Path).FullName
 $ScriptDir = Split-Path -Path $PSScriptFilePath -Parent
 $SolutionRoot = Split-Path -Path $ScriptDir -Parent
 
-$ProjectJsonPath = Join-Path -Path $SolutionRoot -ChildPath "DeveImageOptimizer\DeveImageOptimizer.csproj"
+$ProjectJsonPath = Join-Path -Path $SolutionRoot -ChildPath "WebOptimizationProject\WebOptimizationProject.csproj"
 #$re = [regex]"(?<=`"version`":\s`")[.\w-\*]*(?=`",)"
 #$re1 = [regex]"(?<=\[assembly: AssemblyVersion\(`")1.0.0.0(?=`")"
 #$re2 = [regex]"(?<=\[assembly: AssemblyFileVersion\(`")1.0.0.0(?=`")"
