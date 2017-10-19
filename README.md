@@ -1,6 +1,7 @@
 # WebOptimizationProject
 
 [![Join the chat at https://gitter.im/WebOptimizationProject/Lobby](https://badges.gitter.im/WebOptimizationProject/Lobby.svg)](https://gitter.im/WebOptimizationProject/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build status](https://ci.appveyor.com/api/projects/status/wrq3ewhxqjbqermk?svg=true)](https://ci.appveyor.com/project/devedse/weboptimizationproject)
 
 This project will ultimately optimize the complete web :)
 
