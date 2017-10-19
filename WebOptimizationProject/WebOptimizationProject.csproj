@@ -14,9 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeveImageOptimizer" Version="1.0.98" />
+    <PackageReference Include="DeveImageOptimizer" Version="1.0.137" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Octokit" Version="0.26.0" />
+    <PackageReference Include="Octokit" Version="0.27.0" />
   </ItemGroup>
 
   <ItemGroup>
