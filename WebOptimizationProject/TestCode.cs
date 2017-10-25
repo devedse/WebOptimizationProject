@@ -44,7 +44,7 @@ namespace WebOptimizationProject
 
             var lijstje = new List<OptimizedFileResult>();
 
-            lijstje.Add(new OptimizedFileResult(testjeFile, true, false, 1000000, 900000, TimeSpan.FromSeconds(9.5), new List<string>()));
+            lijstje.Add(new OptimizedFileResult(testjeFile, testjeFile, true, false, 1000000, 900000, TimeSpan.FromSeconds(9.5), new List<string>()));
 
             await Task.Delay(10);
 
