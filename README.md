@@ -13,7 +13,7 @@ If you have any questions, suggestions or other ideas, let me know.
 
 ## How does it work?
 
-The Web Optimization Project makes use of DeveImageOptimizer to optimize a repository. DeveImageOptimizer uses FileOptimizerFull to optimize the images (which uses a bunch of tools like PNGOut, ECT, PNGCrush, etc). After this, DeveImageOptimizer uses ImageSharp to do a Pixel per Pixel comparison of every image that was optimized to ensure they are visually equal (lossless).
+The Web Optimization Project makes use of [DeveImageOptimizer](https://github.com/devedse/DeveImageOptimizer) to optimize a repository. DeveImageOptimizer uses [FileOptimizerFull](https://nikkhokkho.sourceforge.io/static.php?page=FileOptimizer) to optimize the images (which uses a bunch of tools like PNGOut, ECT, PNGCrush, etc). After this, DeveImageOptimizer uses [ImageSharp](https://github.com/SixLabors/ImageSharp) to do a Pixel per Pixel comparison of every image that was optimized to ensure they are visually equal (lossless).
 
 After this is done, a pull request is created with all optimized images.
 
