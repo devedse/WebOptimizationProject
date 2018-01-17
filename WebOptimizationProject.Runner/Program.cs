@@ -14,7 +14,19 @@ namespace WebOptimizationProject.Runner
         {
             Console.WriteLine("For this tool to work you need to have both GIT and HUB installed.");
 
-            await GitHubRepositoryOptimizer.GoOptimize("Clowting", "OOPDraw");
+            string owner = "vuejs";
+            var repos = await GitHubRepositoryOptimizer.ObtainRepositoriesForOwner(owner);
+            foreach (var repo in repos)
+            {
+                await GitHubRepositoryOptimizer.GoOptimize(owner, repo);
+            }
+
+            //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "webpack");
+            //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "simple");
+            //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "pwa");
+            //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "browserify");
+            //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "webpack-simple");
+            //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "browserify-simple");
 
             Console.WriteLine("Application finished, press any key to continue...");
             Console.ReadKey();

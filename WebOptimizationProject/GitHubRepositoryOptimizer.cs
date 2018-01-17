@@ -16,8 +16,23 @@ namespace WebOptimizationProject
 {
     public class GitHubRepositoryOptimizer
     {
+        public static async Task<IEnumerable<string>> ObtainRepositoriesForOwner(string repositoryOwner)
+        {
+            var config = ConfigHelper.GetConfig();
+            var gitOctoKitHandler = new GitOctoKitHandler(config);
+
+            var pubrepos = await gitOctoKitHandler.GitHubClient.Repository.GetAllForUser(repositoryOwner);
+            var orderedPubRepos = pubrepos.OrderByDescending(t => t.StargazersCount);
+
+            var orderedPubReposNames = orderedPubRepos.Select(t => t.Name);
+            return orderedPubReposNames;
+        }
+
         public static async Task GoOptimize(string repositoryOwner, string repositoryName, string branchName = null)
         {
+            Console.WriteLine($"{repositoryOwner}/{repositoryName} is being optimized...");
+            Console.WriteLine();
+
             var config = ConfigHelper.GetConfig();
             var gitOctoKitHandler = new GitOctoKitHandler(config);
 
@@ -125,6 +140,10 @@ namespace WebOptimizationProject
 
                 await gitOctoKitHandler.GitHubClient.PullRequest.Update(repositoryOwner, repositoryName, obtainedPullRequest.Number, pullRequestUpdate);
             }
+
+            Console.WriteLine();
+            Console.WriteLine($"{repositoryOwner}/{repositoryName} is optimized :)");
+            Console.WriteLine();
         }
 
         private static async Task<IEnumerable<OptimizedFileResult>> GoOptimize(string dir, Config config)
