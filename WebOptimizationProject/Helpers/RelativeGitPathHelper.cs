@@ -9,7 +9,7 @@
 
             fullFilePath = fullFilePath.Replace('\\', '/');
 
-            if (!fullFilePath.ToUpperInvariant().StartsWith(clonedRepoPath.ToUpperInvariant()))
+            if (!fullFilePath.StartsWith(clonedRepoPath, System.StringComparison.OrdinalIgnoreCase))
             {
                 return null;
             }
