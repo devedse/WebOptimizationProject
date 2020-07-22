@@ -7,11 +7,11 @@ namespace WebOptimizationProject.Configuration
 {
     public static class ConfigHelper
     {
-        private const string configFileName = "Config.json";
+        private const string ConfigFileName = "Config.json";
 
         public static Config GetConfig()
         {
-            var configPath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, configFileName);
+            var configPath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, ConfigFileName);
 
             Config config = new Config();
             string txt = null;

@@ -1,6 +1,7 @@
 ﻿using DeveImageOptimizer.FileProcessing;
 using DeveImageOptimizer.Helpers;
 using DeveImageOptimizer.State;
+using DeveImageOptimizer.State.StoringProcessedDirectories;
 using Octokit;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using WebOptimizationProject.Configuration;
 using WebOptimizationProject.Helpers;
 using WebOptimizationProject.Helpers.Git;
+using WebOptimizationProject.ImageOptimization;
 
 namespace WebOptimizationProject
 {
@@ -39,7 +41,7 @@ namespace WebOptimizationProject
             string dirOfClonedRepos = config.ClonedRepositoriesDirectoryName;
             if (!Path.IsPathRooted(dirOfClonedRepos))
             {
-                dirOfClonedRepos = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, config.ClonedRepositoriesDirectoryName);
+                dirOfClonedRepos = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, config.ClonedRepositoriesDirectoryName);
             }
 
             Directory.CreateDirectory(dirOfClonedRepos);
@@ -103,7 +105,7 @@ namespace WebOptimizationProject
             var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest();
 
             //Only create pull request if there were actually any successful optimizations
-            if (optimizedFileResults.Any(t => t.Successful) && optimizedFileResults.Sum(t => t.OriginalSize) > optimizedFileResults.Sum(t => t.OptimizedSize))
+            if (optimizedFileResults.Any(t => t.OptimizationResult == OptimizationResult.Success) && optimizedFileResults.Sum(t => t.OriginalSize) > optimizedFileResults.Sum(t => t.OptimizedSize))
             {
                 var pullRequestState = await git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
                 Console.WriteLine("Pullrequeststate: " + pullRequestState);
@@ -146,10 +148,18 @@ namespace WebOptimizationProject
             Console.WriteLine();
         }
 
-        private static async Task<IEnumerable<OptimizedFileResult>> GoOptimize(string dir, Config config)
+        private static async Task<IEnumerable<OptimizableFile>> GoOptimize(string dir, Config config)
         {
-            var fileOptimizer = new FileOptimizerProcessor(config.FileOptimizerFullExePath, FolderHelperMethods.EntryTempDirectory.Value);
-            var fileProcessor = new FileProcessor(fileOptimizer, null, new FileProcessedStateRememberer(false));
+            var c = new DeveImageOptimizerConfiguration()
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
+
+            var wopProgressReporter = new WopProgressReporter();
+            var fileRememberer = new FileProcessedStateRememberer(false);
+            var dirRememberer = new DirProcessedStateRememberer(false);
+
+            var fileProcessor = new DeveImageOptimizerProcessor(c, wopProgressReporter, fileRememberer, dirRememberer);
             var optimizedFileResults = await fileProcessor.ProcessDirectory(dir);
 
             return optimizedFileResults;

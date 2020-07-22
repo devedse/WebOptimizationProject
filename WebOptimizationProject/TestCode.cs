@@ -37,19 +37,19 @@ namespace WebOptimizationProject
             //await git.PullRequest("The Web Optimization Project has optimized your repository!", desc);
         }
 
-        private static async Task<IEnumerable<OptimizedFileResult>> GoOptimizeStub(string dir, Config config)
-        {
-            var testjeFile = Path.Combine(dir, "Testje.txt");
-            File.WriteAllText(testjeFile, $"{DateTime.Now}: This is just a test file. Don't accept my pull request, it's just for testing.");
+        //private static async Task<IEnumerable<OptimizableFile>> GoOptimizeStub(string dir, Config config)
+        //{
+        //    var testjeFile = Path.Combine(dir, "Testje.txt");
+        //    File.WriteAllText(testjeFile, $"{DateTime.Now}: This is just a test file. Don't accept my pull request, it's just for testing.");
 
-            var lijstje = new List<OptimizedFileResult>();
+        //    var lijstje = new List<OptimizableFile>();
 
-            lijstje.Add(new OptimizedFileResult(testjeFile, testjeFile, true, false, 1000000, 900000, TimeSpan.FromSeconds(9.5), new List<string>()));
+        //    lijstje.Add(new OptimizableFile(testjeFile, testjeFile, true, false, 1000000, 900000, TimeSpan.FromSeconds(9.5), new List<string>()));
 
-            await Task.Delay(10);
+        //    await Task.Delay(10);
 
-            return lijstje;
-        }
+        //    return lijstje;
+        //}
 
         public static async Task Testje2()
         {

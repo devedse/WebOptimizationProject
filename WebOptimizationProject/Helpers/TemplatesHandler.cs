@@ -1,4 +1,5 @@
-﻿using DeveImageOptimizer.Helpers;
+﻿using DeveImageOptimizer;
+using DeveImageOptimizer.Helpers;
 using DeveImageOptimizer.State;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace WebOptimizationProject.Helpers
     {
         public static async Task<string> GetDescriptionForPullRequest()
         {
-            var filePath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
 
@@ -24,17 +25,17 @@ namespace WebOptimizationProject.Helpers
             return templateText;
         }
 
-        public static async Task<string> GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizedFileResult> optimizedFileResults, int commitNumber)
+        public static async Task<string> GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizableFile> optimizedFileResults, int commitNumber)
         {
-            var filePath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
             templateText = templateText.Replace("{CommitNumber}", commitNumber.ToString());
-            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", DeveImageOptimizer.Constants.ValidExtensions));
+            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", ConstantsAndConfig.ValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
 
             var totalBytesBefore = optimizedFileResults.Sum(t => t.OriginalSize);
-            var totalBytesSaved = optimizedFileResults.Where(t => t.Successful).Sum(t => t.OriginalSize - t.OptimizedSize);
+            var totalBytesSaved = optimizedFileResults.Where(t => t.OptimizationResult == OptimizationResult.Success).Sum(t => t.OriginalSize - t.OptimizedSize);
             var totalBytesAfter = totalBytesBefore - totalBytesSaved;
             var percentageRemaining = Math.Round((double)totalBytesAfter / (double)totalBytesBefore * 100.0, 2);
 
@@ -45,9 +46,9 @@ namespace WebOptimizationProject.Helpers
             }
 
             templateText = templateText.Replace("{OptimizableFileCount}", optimizedFileResults.Count().ToString());
-            templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize > t.OptimizedSize).ToString());
-            templateText = templateText.Replace("{FilesAlreadyOptimized}", optimizedFileResults.Count(t => t.Successful && t.OriginalSize == t.OptimizedSize).ToString());
-            templateText = templateText.Replace("{FilesFailedOptimization}", optimizedFileResults.Count(t => !t.Successful).ToString());
+            templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.OptimizationResult == OptimizationResult.Success).ToString());
+            templateText = templateText.Replace("{FilesAlreadyOptimized}", optimizedFileResults.Count(t => t.OptimizationResult == OptimizationResult.Skipped).ToString());
+            templateText = templateText.Replace("{FilesFailedOptimization}", optimizedFileResults.Count(t => t.OptimizationResult == OptimizationResult.Failed).ToString());
             templateText = templateText.Replace("{TotalBytesBefore}", UomHelper.BytesToString(totalBytesBefore));
             templateText = templateText.Replace("{TotalBytesAfter}", UomHelper.BytesToString(totalBytesAfter));
             templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
@@ -56,9 +57,9 @@ namespace WebOptimizationProject.Helpers
 
             var optimizedFilesTable = new StringBuilder();
 
-            optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Duration | Successful");
+            optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Duration | Status");
             optimizedFilesTable.AppendLine("-- | -- | -- | -- | -- | --");
-            var filesToPrint = optimizedFileResults.Where(t => t.OriginalSize > t.OptimizedSize || !t.Successful).OrderByDescending(t => t.OriginalSize - t.OptimizedSize);
+            var filesToPrint = optimizedFileResults.Where(t => t.OriginalSize > t.OptimizedSize || t.OptimizationResult == OptimizationResult.Failed).OrderByDescending(t => t.OriginalSize - t.OptimizedSize);
             foreach (var fileResult in filesToPrint)
             {
                 //Reduce length of filename
@@ -80,7 +81,7 @@ namespace WebOptimizationProject.Helpers
                 var originalSize = UomHelper.BytesToString(fileResult.OriginalSize);
                 var optimizedSize = UomHelper.BytesToString(fileResult.OptimizedSize);
                 var bytesSaved = UomHelper.BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
-                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {UomHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.Successful}");
+                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {UomHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.OptimizationResult}");
             }
 
             templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
@@ -90,7 +91,7 @@ namespace WebOptimizationProject.Helpers
 
         public static async Task<string> GetDescriptionForCommit()
         {
-            var filePath = Path.Combine(FolderHelperMethods.EntryAssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
+            var filePath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
             var templateText = await Task.Run(() => File.ReadAllText(filePath));
 
             return templateText;
