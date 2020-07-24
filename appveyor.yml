@@ -6,7 +6,7 @@ configuration: Release
 before_build:
   - ps: .\scripts\set-version.ps1
   - cmd: dotnet --info
-  - cmd: nuget restore
+  - cmd: dotnet restore
 
 build_script:
   - cmd: dotnet build -c Release
