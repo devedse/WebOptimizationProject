@@ -1,25 +1,38 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
+using WebOptimizationProject.Configuration;
 
 namespace WebOptimizationProject.Runner
 {
-    class Program
+    public static class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            MainAsync(args).GetAwaiter().GetResult();
-        }
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), true, true);
 
-        public static async Task MainAsync(string[] args)
-        {
+            var configuration = builder.Build();
+
             Console.WriteLine("For this tool to work you need to have both GIT and HUB installed.");
 
-            string owner = "vuejs";
-            var repos = await GitHubRepositoryOptimizer.ObtainRepositoriesForOwner(owner);
-            foreach (var repo in repos)
-            {
-                await GitHubRepositoryOptimizer.GoOptimize(owner, repo);
-            }
+            var wopConfig = new WopConfig();
+            configuration.Bind(wopConfig);
+
+            var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig);
+            await githubRepositoryOptimizer.GoOptimize("WebOptimizationProject", "TestRepo1");
+
+            //string owner = "vuejs";
+            //var repos = await GitHubRepositoryOptimizer.ObtainRepositoriesForOwner(owner);
+            //foreach (var repo in repos)
+            //{
+            //    await GitHubRepositoryOptimizer.GoOptimize(owner, repo);
+            //}
 
             //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "webpack");
             //await GitHubRepositoryOptimizer.GoOptimize("vuejs-templates", "simple");

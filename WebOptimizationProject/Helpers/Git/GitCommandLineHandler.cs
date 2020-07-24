@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdysTech.CredentialManager;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,11 +10,21 @@ namespace WebOptimizationProject.Helpers.Git
 {
     public class GitCommandLineHandler
     {
-        private readonly Config config;
+        private readonly WopConfig _config;
 
-        public GitCommandLineHandler(Config config)
+        public GitCommandLineHandler(WopConfig config)
         {
-            this.config = config;
+            this._config = config;
+
+            Console.WriteLine($"Configuring git credentials in CredentialManager...");
+            var cred = new System.Net.NetworkCredential("PersonalAccessToken", config.GitHubToken);
+            var icred = cred.ToICredential();
+
+            icred.TargetName = "git:https://github.com";
+            icred.Persistance = Persistance.LocalMachine;
+
+            var result = icred.SaveCredential();
+            Console.WriteLine($"Credential configuration result: {result}");
         }
 
         public async Task<string> GitClone(string repositoriesDir, string userName, string repositoryName)
@@ -24,7 +35,7 @@ namespace WebOptimizationProject.Helpers.Git
 
             var totalUrl = $"https://github.com/{userName}/{repositoryName}.git";
 
-            await RunGitCommand($"clone {totalUrl}");
+            await RunHubCommand($"clone {totalUrl}");
 
             return cloneingDir;
         }
@@ -47,14 +58,18 @@ namespace WebOptimizationProject.Helpers.Git
             return await RunHubCommand(stringForPullRequest);
         }
 
-        public async Task<int> RunGitCommand(string command)
-        {
-            return await WopProcessRunner.RunProcessAsync("git", command);
-        }
+        //public async Task<int> RunGitCommand(string command)
+        //{
+        //    return await WopProcessRunner.RunProcessAsync("git", command);
+        //}
 
         public async Task<int> RunHubCommand(string command)
         {
-            return await WopProcessRunner.RunProcessAsync("hub", command);
+            var envs = new List<EnvironmentVariable>() {
+                new EnvironmentVariable("GITHUB_TOKEN", _config.GitHubToken),
+                new EnvironmentVariable("GITHUB_USER", _config.GitHubUserName)
+            };
+            return await WopProcessRunner.RunProcessAsync("hub", command, envs);
         }
 
         public async Task<string> GetHeadBranch()

@@ -10,19 +10,19 @@ namespace WebOptimizationProject.Helpers.Git
     public class GitOctoKitHandler
     {
         public GitHubClient GitHubClient { get; }
-        private readonly Config _config;
+        private readonly WopConfig _config;
 
-        public GitOctoKitHandler(Config config)
+        public GitOctoKitHandler(WopConfig config)
         {
             _config = config;
             GitHubClient = CreateGitHubClient(config);
         }
 
-        private GitHubClient CreateGitHubClient(Config config)
+        private GitHubClient CreateGitHubClient(WopConfig config)
         {
             if (string.IsNullOrWhiteSpace(config.GitHubToken))
             {
-                throw new InvalidOperationException("Github token is null or empty, please modify config.json");
+                throw new InvalidOperationException("Github token is null or empty, make sure the token is configured in the Environment Variables or secrets.json");
             }
             //var credentials = new InMemoryCredentialStore(new Credentials(config.GitHubToken));
             var githubclient = new GitHubClient(new ProductHeaderValue(Constants.FeatureName));
@@ -48,7 +48,7 @@ namespace WebOptimizationProject.Helpers.Git
                 {
                     Page = page,
                     PerPage = 100,
-                    Author = _config.GithubUserName,
+                    Author = _config.GitHubUserName,
                     Type = IssueTypeQualifier.PullRequest,
                     State = ItemState.Open,
                     Head = Constants.FeatureName,

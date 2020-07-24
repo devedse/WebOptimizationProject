@@ -51,40 +51,40 @@ namespace WebOptimizationProject
         //    return lijstje;
         //}
 
-        public static async Task Testje2()
-        {
-            var config = ConfigHelper.GetConfig();
-            var gitOctoKitHandler = new GitOctoKitHandler(config);
-            //Directory.SetCurrentDirectory(@"C:\XWOP\test-image-optimization");
-            //var git = new GitHandler(config);
+        //public static async Task Testje2()
+        //{
+        //    var config = ConfigHelper.GetConfig();
+        //    var gitOctoKitHandler = new GitOctoKitHandler(config);
+        //    //Directory.SetCurrentDirectory(@"C:\XWOP\test-image-optimization");
+        //    //var git = new GitHandler(config);
 
-            //await git.PullRequest("HOI", "DOEI");
-
-
-            var pr = await gitOctoKitHandler.GetPullRequest("desjoerd", "test-image-optimization");
-
-            var pullRequestUpdate = new PullRequestUpdate()
-            {
-                Body = "hoihoi"
-            };
-
-            var res = await gitOctoKitHandler.GitHubClient.PullRequest.Update("desjoerd", "test-image-optimization", 6, pullRequestUpdate);
-
-            //var pr = github.PullRequest;
+        //    //await git.PullRequest("HOI", "DOEI");
 
 
-            //var repo = await github.Repository.Get("antonfirsov", "Imagesharp.Tests.Images");
+        //    var pr = await gitOctoKitHandler.GetPullRequest("desjoerd", "test-image-optimization");
 
-            //var fff = await github.Search.SearchIssues(new SearchIssuesRequest("state%3Aopen+author%3Adevedse+type%3Apr"));
+        //    var pullRequestUpdate = new PullRequestUpdate()
+        //    {
+        //        Body = "hoihoi"
+        //    };
 
-            //var apiOptions = new ApiOptions()
-            //{
+        //    var res = await gitOctoKitHandler.GitHubClient.PullRequest.Update("desjoerd", "test-image-optimization", 6, pullRequestUpdate);
 
-            //};
-            //var aaa = new PullRequestRequest() { State = ItemStateFilter.Open };
+        //    //var pr = github.PullRequest;
 
-            //var prrr = await github.PullRequest.GetAllForRepository("antonfirsov", "Imagesharp.Tests.Images", aaa);
-            //var user = await github.User.Get("devedse");
-        }
+
+        //    //var repo = await github.Repository.Get("antonfirsov", "Imagesharp.Tests.Images");
+
+        //    //var fff = await github.Search.SearchIssues(new SearchIssuesRequest("state%3Aopen+author%3Adevedse+type%3Apr"));
+
+        //    //var apiOptions = new ApiOptions()
+        //    //{
+
+        //    //};
+        //    //var aaa = new PullRequestRequest() { State = ItemStateFilter.Open };
+
+        //    //var prrr = await github.PullRequest.GetAllForRepository("antonfirsov", "Imagesharp.Tests.Images", aaa);
+        //    //var user = await github.User.Get("devedse");
+        //}
     }
 }
