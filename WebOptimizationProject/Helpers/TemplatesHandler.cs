@@ -1,5 +1,4 @@
 ﻿using DeveImageOptimizer;
-using DeveImageOptimizer.Helpers;
 using DeveImageOptimizer.State;
 using System;
 using System.Collections.Generic;
@@ -7,16 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using WebOptimizationProject.Resources;
 
 namespace WebOptimizationProject.Helpers
 {
     public static class TemplatesHandler
     {
-        public static async Task<string> GetDescriptionForPullRequest()
+        public static string GetDescriptionForPullRequest()
         {
-            var filePath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, "PullRequestMarkdownTemplate.txt");
-            var templateText = await Task.Run(() => File.ReadAllText(filePath));
+            var templateText = Templates.PullRequestMarkdownTemplate;
 
 
             //var stringForCommitDetails = await GetCommitDescriptionForPullRequest(optimizedFileResults, 1);
@@ -25,10 +23,9 @@ namespace WebOptimizationProject.Helpers
             return templateText;
         }
 
-        public static async Task<string> GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizableFile> optimizedFileResults, int commitNumber)
+        public static string GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizableFile> optimizedFileResults, int commitNumber)
         {
-            var filePath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, "CommitInPullRequestMarkdownTemplate.txt");
-            var templateText = await Task.Run(() => File.ReadAllText(filePath));
+            var templateText = Templates.CommitInPullRequestMarkdownTemplate;
 
             templateText = templateText.Replace("{CommitNumber}", commitNumber.ToString());
             templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", ConstantsAndConfig.ValidExtensions));
@@ -37,7 +34,7 @@ namespace WebOptimizationProject.Helpers
             var totalBytesBefore = optimizedFileResults.Sum(t => t.OriginalSize);
             var totalBytesSaved = optimizedFileResults.Where(t => t.OptimizationResult == OptimizationResult.Success).Sum(t => t.OriginalSize - t.OptimizedSize);
             var totalBytesAfter = totalBytesBefore - totalBytesSaved;
-            var percentageRemaining = Math.Round((double)totalBytesAfter / (double)totalBytesBefore * 100.0, 2);
+            var percentageRemaining = Math.Round(totalBytesAfter / (double)totalBytesBefore * 100.0, 2);
 
             var timeSpan = TimeSpan.Zero;
             foreach (var duration in optimizedFileResults.Select(t => t.Duration))
@@ -89,10 +86,9 @@ namespace WebOptimizationProject.Helpers
             return templateText;
         }
 
-        public static async Task<string> GetDescriptionForCommit()
+        public static string GetDescriptionForCommit()
         {
-            var filePath = Path.Combine(FolderHelperMethods.Internal_AssemblyDirectory.Value, "CommitMarkdownTemplate.txt");
-            var templateText = await Task.Run(() => File.ReadAllText(filePath));
+            var templateText = Templates.CommitMarkdownTemplate;
 
             return templateText;
         }

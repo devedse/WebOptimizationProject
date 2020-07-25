@@ -107,11 +107,11 @@ namespace WebOptimizationProject
 
             await _git.RunHubCommand("add .");
 
-            var descriptionForCommit = await TemplatesHandler.GetDescriptionForCommit();
+            var descriptionForCommit = TemplatesHandler.GetDescriptionForCommit();
             await _git.Commit("Wop optimized this repository", descriptionForCommit);
             await _git.RunHubCommand($"push");
 
-            var descriptionForPullRequest = await TemplatesHandler.GetDescriptionForPullRequest();
+            var descriptionForPullRequest = TemplatesHandler.GetDescriptionForPullRequest();
 
             //Only create pull request if there were actually any successful optimizations
             if (optimizedFileResults.Any(t => t.OptimizationResult == OptimizationResult.Success) && optimizedFileResults.Sum(t => t.OriginalSize) > optimizedFileResults.Sum(t => t.OptimizedSize))
@@ -141,7 +141,7 @@ namespace WebOptimizationProject
                     commitCount = splittedBody.Count(t => t.StartsWith(commitIdentifier));
                 }
 
-                var descriptionForCommitInPr = await TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, commitCount + 1);
+                var descriptionForCommitInPr = TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, commitCount + 1);
 
                 bodySb.AppendLine();
                 bodySb.AppendLine();
