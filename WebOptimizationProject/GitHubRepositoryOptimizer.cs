@@ -41,8 +41,25 @@ namespace WebOptimizationProject
             return orderedPubReposNames;
         }
 
+
+
+        public async Task GoOptimize(long repositoryId, string branchName = null)
+        {
+            var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryId);
+            await GoOptimize(repositoryInfo, branchName);
+        }
+
         public async Task GoOptimize(string repositoryOwner, string repositoryName, string branchName = null)
         {
+            var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryOwner, repositoryName);
+            await GoOptimize(repositoryInfo, branchName);
+        }
+
+        public async Task GoOptimize(Repository repository, string branchName = null)
+        {
+            var repositoryOwner = repository.Owner.Name;
+            var repositoryName = repository.Name;
+
             Console.WriteLine($"{repositoryOwner}/{repositoryName} is being optimized...");
             Console.WriteLine();
 
