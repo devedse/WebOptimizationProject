@@ -58,7 +58,7 @@ namespace WebOptimizationProject
 
         public async Task GoOptimize(Repository repository, string branchName = null)
         {
-            var repositoryOwner = repository.Owner.Name;
+            var repositoryOwner = repository.Owner.Login;
             var repositoryName = repository.Name;
 
             Console.WriteLine($"{repositoryOwner}/{repositoryName} is being optimized...");

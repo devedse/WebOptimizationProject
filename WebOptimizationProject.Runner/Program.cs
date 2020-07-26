@@ -32,7 +32,8 @@ namespace WebOptimizationProject.Runner
             };
 
             var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig, deveImageOptimizerConfiguration, new WopProgressReporter());
-            await githubRepositoryOptimizer.GoOptimize("WebOptimizationProject", "TestRepo1");
+            //await githubRepositoryOptimizer.GoOptimize("WebOptimizationProject", "TestRepo1");
+            await githubRepositoryOptimizer.GoOptimize(282345207L);
 
             //string owner = "vuejs";
             //var repos = await GitHubRepositoryOptimizer.ObtainRepositoriesForOwner(owner);
