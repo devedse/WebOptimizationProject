@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="AdysTech.CredentialManager" Version="2.2.0" />
-    <PackageReference Include="DeveImageOptimizer" Version="1.0.345" />
+    <PackageReference Include="DeveImageOptimizer" Version="1.0.346" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Octokit" Version="0.48.0" />
   </ItemGroup>
