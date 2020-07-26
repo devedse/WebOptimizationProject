@@ -12,21 +12,22 @@ using System.Threading.Tasks;
 using WebOptimizationProject.Configuration;
 using WebOptimizationProject.Helpers;
 using WebOptimizationProject.Helpers.Git;
-using WebOptimizationProject.ImageOptimization;
 
 namespace WebOptimizationProject
 {
     public class GitHubRepositoryOptimizer
     {
         private readonly WopConfig _wopConfig;
+        private readonly DeveImageOptimizerConfiguration _deveImageOptimizerConfiguration;
+        private readonly IProgressReporter _progressReporter;
         private readonly GitOctoKitHandler _gitOctoKitHandler;
         private readonly GitCommandLineHandler _git;
 
-        public GitHubRepositoryOptimizer(WopConfig wopConfig)
+        public GitHubRepositoryOptimizer(WopConfig wopConfig, DeveImageOptimizerConfiguration deveImageOptimizerConfiguration, IProgressReporter progressReporter)
         {
             _wopConfig = wopConfig;
-
-
+            _deveImageOptimizerConfiguration = deveImageOptimizerConfiguration;
+            _progressReporter = progressReporter;
             _gitOctoKitHandler = new GitOctoKitHandler(_wopConfig);
             _git = new GitCommandLineHandler(_wopConfig);
         }
@@ -188,19 +189,13 @@ namespace WebOptimizationProject
             Console.WriteLine();
         }
 
-        private static async Task<IEnumerable<OptimizableFile>> GoOptimize(string dir, WopConfig config)
+        private async Task<IEnumerable<OptimizableFile>> GoOptimize(string dir, WopConfig config)
         {
-            var c = new DeveImageOptimizerConfiguration()
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
-            };
-
-            var wopProgressReporter = new WopProgressReporter();
             var fileRememberer = new FileProcessedStateRememberer(false);
             var dirRememberer = new DirProcessedStateRememberer(true);
 
-            var fileProcessor = new DeveImageOptimizerProcessor(c, wopProgressReporter, fileRememberer, dirRememberer);
-            var optimizedFileResults = await fileProcessor.ProcessDirectoryParallel(dir);
+            var fileProcessor = new DeveImageOptimizerProcessor(_deveImageOptimizerConfiguration, _progressReporter, fileRememberer, dirRememberer);
+            var optimizedFileResults = await fileProcessor.ProcessDirectory(dir);
 
             return optimizedFileResults;
         }

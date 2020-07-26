@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DeveImageOptimizer.FileProcessing;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Reflection;
@@ -24,7 +25,13 @@ namespace WebOptimizationProject.Runner
             var wopConfig = new WopConfig();
             configuration.Bind(wopConfig);
 
-            var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig);
+            var deveImageOptimizerConfiguration = new DeveImageOptimizerConfiguration()
+            {
+                ExecuteImageOptimizationParallel = true,
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
+
+            var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig, deveImageOptimizerConfiguration, new WopProgressReporter());
             await githubRepositoryOptimizer.GoOptimize("WebOptimizationProject", "TestRepo1");
 
             //string owner = "vuejs";
