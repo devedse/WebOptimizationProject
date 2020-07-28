@@ -1,4 +1,5 @@
-﻿using DeveImageOptimizer;
+﻿using DeveCoolLib.Conversion;
+using DeveImageOptimizer;
 using DeveImageOptimizer.State;
 using System;
 using System.Collections.Generic;
@@ -46,11 +47,11 @@ namespace WebOptimizationProject.Helpers
             templateText = templateText.Replace("{FilesOptimizedSuccessfully}", optimizedFileResults.Count(t => t.OptimizationResult == OptimizationResult.Success).ToString());
             templateText = templateText.Replace("{FilesAlreadyOptimized}", optimizedFileResults.Count(t => t.OptimizationResult == OptimizationResult.Skipped).ToString());
             templateText = templateText.Replace("{FilesFailedOptimization}", optimizedFileResults.Count(t => t.OptimizationResult == OptimizationResult.Failed).ToString());
-            templateText = templateText.Replace("{TotalBytesBefore}", UomHelper.BytesToString(totalBytesBefore));
-            templateText = templateText.Replace("{TotalBytesAfter}", UomHelper.BytesToString(totalBytesAfter));
+            templateText = templateText.Replace("{TotalBytesBefore}", ValuesToStringHelper.BytesToString(totalBytesBefore));
+            templateText = templateText.Replace("{TotalBytesAfter}", ValuesToStringHelper.BytesToString(totalBytesAfter));
             templateText = templateText.Replace("{PercentageRemaining}", $"{percentageRemaining}%");
-            templateText = templateText.Replace("{TotalBytesSaved}", UomHelper.BytesToString(totalBytesSaved));
-            templateText = templateText.Replace("{OptimizationDuration}", UomHelper.SecondsToString((long)timeSpan.TotalSeconds));
+            templateText = templateText.Replace("{TotalBytesSaved}", ValuesToStringHelper.BytesToString(totalBytesSaved));
+            templateText = templateText.Replace("{OptimizationDuration}", ValuesToStringHelper.SecondsToString((long)timeSpan.TotalSeconds));
 
             var optimizedFilesTable = new StringBuilder();
 
@@ -75,10 +76,10 @@ namespace WebOptimizationProject.Helpers
                     fileName = $"[{fileName}]({relativeGitPath})";
                 }
 
-                var originalSize = UomHelper.BytesToString(fileResult.OriginalSize);
-                var optimizedSize = UomHelper.BytesToString(fileResult.OptimizedSize);
-                var bytesSaved = UomHelper.BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
-                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {UomHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.OptimizationResult}");
+                var originalSize = ValuesToStringHelper.BytesToString(fileResult.OriginalSize);
+                var optimizedSize = ValuesToStringHelper.BytesToString(fileResult.OptimizedSize);
+                var bytesSaved = ValuesToStringHelper.BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
+                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {ValuesToStringHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.OptimizationResult}");
             }
 
             templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
