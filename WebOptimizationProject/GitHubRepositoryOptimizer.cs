@@ -144,10 +144,12 @@ namespace WebOptimizationProject
                     };
                     obtainedPullRequest = await _gitOctoKitHandler.GitHubClient.PullRequest.Create(repositoryOwner, repositoryName, pr);
                 }
+                Console.WriteLine($"Using PR: {obtainedPullRequest.Url}");
 
                 var descriptionForCommitInPr = TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, DateTime.UtcNow.ToString());
                 Console.WriteLine($"Creating comment on pr with length {descriptionForCommitInPr.Length}...");
-                var result = await _gitOctoKitHandler.GitHubClient.Issue.Comment.Create("WebOptimizationProject", "TestRepo1", obtainedPullRequest.Number, descriptionForCommitInPr);
+                var createdComment = await _gitOctoKitHandler.GitHubClient.Issue.Comment.Create(repositoryOwner, repositoryName, obtainedPullRequest.Number, descriptionForCommitInPr);
+                Console.WriteLine($"Comment created: {createdComment.Url}");
             }
 
             Console.WriteLine();
