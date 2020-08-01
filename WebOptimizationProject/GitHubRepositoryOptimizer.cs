@@ -132,56 +132,22 @@ namespace WebOptimizationProject
             var descriptionForPullRequest = TemplatesHandler.GetDescriptionForPullRequest();
 
             //Only create pull request if there were actually any successful optimizations
-            if (optimizedFileResults.Any(t => t.OptimizationResult == OptimizationResult.Success) && optimizedFileResults.Sum(t => t.OriginalSize) > optimizedFileResults.Sum(t => t.OptimizedSize))
+            if (optimizedFileResults.Any(t => t.OptimizationResult == OptimizationResult.Success && t.OriginalSize > t.OptimizedSize))
             {
-                //var pullRequestState = await _git.PullRequest("The Web Optimization Project has optimized your repository!", descriptionForPullRequest);
-                //Console.WriteLine("Pullrequeststate: " + pullRequestState);
-
-
                 PullRequest obtainedPullRequest = await _gitOctoKitHandler.GetPullRequest(repositoryOwner, repositoryName);
-
-                int commitCount = 0;
-                var bodySb = new StringBuilder();
-
-
 
                 if (obtainedPullRequest == null)
                 {
-                    bodySb.AppendLine(descriptionForPullRequest);
-                }
-                else
-                {
-                    bodySb.AppendLine(obtainedPullRequest.Body);
-
-                    Console.WriteLine($"Found pull request: {obtainedPullRequest.HtmlUrl}");
-                    var commitIdentifier = "### Commit ";
-                    var splittedBody = obtainedPullRequest.Body.Split('\n');
-                    commitCount = splittedBody.Count(t => t.StartsWith(commitIdentifier));
-                }
-
-                var descriptionForCommitInPr = TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, commitCount + 1);
-
-                bodySb.AppendLine();
-                bodySb.AppendLine();
-                bodySb.AppendLine(descriptionForCommitInPr);
-
-
-                if (obtainedPullRequest != null)
-                {
-                    var pullRequestUpdate = new PullRequestUpdate()
-                    {
-                        Body = bodySb.ToString()
-                    };
-                    await _gitOctoKitHandler.GitHubClient.PullRequest.Update(repositoryOwner, repositoryName, obtainedPullRequest.Number, pullRequestUpdate);
-                }
-                else
-                {
                     var pr = new NewPullRequest("The Web Optimization Project has optimized your repository!", $"{_wopConfig.GitHubUserName}:{Constants.FeatureName}", branchName)
                     {
-                        Body = bodySb.ToString()
+                        Body = descriptionForPullRequest
                     };
-                    await _gitOctoKitHandler.GitHubClient.PullRequest.Create(repositoryOwner, repositoryName, pr);
+                    obtainedPullRequest = await _gitOctoKitHandler.GitHubClient.PullRequest.Create(repositoryOwner, repositoryName, pr);
                 }
+
+                var descriptionForCommitInPr = TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, DateTime.UtcNow.ToString());
+                Console.WriteLine($"Creating comment on pr with length {descriptionForCommitInPr.Length}...");
+                var result = await _gitOctoKitHandler.GitHubClient.Issue.Comment.Create("WebOptimizationProject", "TestRepo1", obtainedPullRequest.Number, descriptionForCommitInPr);
             }
 
             Console.WriteLine();

@@ -9,4 +9,4 @@ If you have any questions, feel free to create an issue or join the gitter chat:
 
 The Web Optimization Project optimized this repository. All optimizations (compressions) are done losslessly and no quality / data is lost. This is also verified afterwards by the Wop so you can be sure that your images are exactly the same.
 
-## Commits
+Check the comments below to find out exactly what files where optimized :smile:

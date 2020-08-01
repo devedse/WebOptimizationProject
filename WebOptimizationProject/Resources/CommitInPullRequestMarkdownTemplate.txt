@@ -1,4 +1,4 @@
-﻿### Commit {CommitNumber}
+﻿### Commit {CommitDate}
 
 Information | Value
 -- | --
@@ -21,4 +21,4 @@ Time taken for optimization | {OptimizationDuration}
 
 #### Files optimized in this repository
 
-{OptimizedFiles}
+(Files that couldn't be optimized any further are not listed here)

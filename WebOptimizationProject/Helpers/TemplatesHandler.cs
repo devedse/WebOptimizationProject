@@ -24,11 +24,11 @@ namespace WebOptimizationProject.Helpers
             return templateText;
         }
 
-        public static string GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizableFile> optimizedFileResults, int commitNumber)
+        public static string GetCommitDescriptionForPullRequest(string clonedRepoPath, string branchName, IEnumerable<OptimizableFile> optimizedFileResults, string commitDate)
         {
-            var templateText = Templates.CommitInPullRequestMarkdownTemplate;
+            var templateText = Templates.CommitInPullRequestMarkdownTemplate.Trim();
 
-            templateText = templateText.Replace("{CommitNumber}", commitNumber.ToString());
+            templateText = templateText.Replace("{CommitDate}", commitDate);
             templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", ConstantsAndConfig.ValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
 
@@ -54,12 +54,21 @@ namespace WebOptimizationProject.Helpers
             templateText = templateText.Replace("{OptimizationDuration}", ValuesToStringHelper.SecondsToString((long)timeSpan.TotalSeconds));
 
             var optimizedFilesTable = new StringBuilder();
-
+            optimizedFilesTable.AppendLine(templateText);
+            optimizedFilesTable.AppendLine();
             optimizedFilesTable.AppendLine("FileName | Original Size | Optimized Size | Bytes Saved | Duration | Status");
             optimizedFilesTable.AppendLine("-- | -- | -- | -- | -- | --");
-            var filesToPrint = optimizedFileResults.Where(t => t.OriginalSize > t.OptimizedSize || t.OptimizationResult == OptimizationResult.Failed).OrderByDescending(t => t.OriginalSize - t.OptimizedSize);
-            foreach (var fileResult in filesToPrint)
+            var filesToPrint = optimizedFileResults
+                //Don't list items that where skipped or did succeed but did not get optimized anything
+                .Where(t => (t.OptimizationResult == OptimizationResult.Success && t.OriginalSize > t.OptimizedSize) || t.OptimizationResult == OptimizationResult.Failed)
+                .OrderByDescending(t => t.OptimizationResult == OptimizationResult.Failed) //This ensures the Failed items come first
+                .ThenByDescending(t => t.OriginalSize - t.OptimizedSize)
+                .ToList();
+
+            for (int i = 0; i < filesToPrint.Count; i++)
             {
+                var fileResult = filesToPrint[i];
+
                 //Reduce length of filename
                 string fileName = Path.GetFileName(fileResult.Path);
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
@@ -79,12 +88,30 @@ namespace WebOptimizationProject.Helpers
                 var originalSize = ValuesToStringHelper.BytesToString(fileResult.OriginalSize);
                 var optimizedSize = ValuesToStringHelper.BytesToString(fileResult.OptimizedSize);
                 var bytesSaved = ValuesToStringHelper.BytesToString(fileResult.OriginalSize - fileResult.OptimizedSize);
-                optimizedFilesTable.AppendLine($"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {ValuesToStringHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.OptimizationResult}");
+
+                var newLine = $"{fileName} | {originalSize} | {optimizedSize} | {bytesSaved} | {ValuesToStringHelper.SecondsToString((long)fileResult.Duration.TotalSeconds)} | {fileResult.OptimizationResult}{Environment.NewLine}";
+
+
+                var truncateMessage = "";
+                if (i < filesToPrint.Count - 1)
+                {
+                    //Not the last item
+                    truncateMessage = $"{Environment.NewLine}Remaining {filesToPrint.Count - i} items got truncated.";
+                }
+
+
+                if (optimizedFilesTable.Length + newLine.Length + truncateMessage.Length > Constants.MaxLengthPullRequestDescriptionAndComment)
+                {
+                    optimizedFilesTable.Append(truncateMessage);
+                    return optimizedFilesTable.ToString();
+                }
+                else
+                {
+                    optimizedFilesTable.Append(newLine);
+                }
             }
 
-            templateText = templateText.Replace("{OptimizedFiles}", optimizedFilesTable.ToString());
-
-            return templateText;
+            return optimizedFilesTable.ToString();
         }
 
         public static string GetDescriptionForCommit()
