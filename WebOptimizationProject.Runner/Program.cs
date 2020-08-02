@@ -33,7 +33,12 @@ namespace WebOptimizationProject.Runner
 
             var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig, deveImageOptimizerConfiguration, new WopProgressReporter());
             //await githubRepositoryOptimizer.GoOptimize("WebOptimizationProject", "TestRepo1");
-            await githubRepositoryOptimizer.GoOptimize(282345207L);
+            //await githubRepositoryOptimizer.GoOptimize(282345207L);
+
+
+
+            var repoManager = new WopRepoManager(wopConfig);
+            repoManager.Start();
 
             //string owner = "vuejs";
             //var repos = await GitHubRepositoryOptimizer.ObtainRepositoriesForOwner(owner);
