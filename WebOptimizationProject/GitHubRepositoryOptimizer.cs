@@ -101,7 +101,7 @@ namespace WebOptimizationProject
 
             var wasAbleToAddTrackedBranch = await _git.RunHubCommand($"checkout --track -b {Constants.FeatureName} {_wopConfig.GitHubUserName}/{Constants.FeatureName}");
 
-            if (wasAbleToAddTrackedBranch == 0)
+            if (wasAbleToAddTrackedBranch.ExitCode == 0)
             {
                 await _git.RunHubCommand($"merge --strategy-option=theirs {_wopConfig.GitHubUserName}/{branchName}");
                 await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} {Constants.FeatureName} -u");
@@ -109,7 +109,7 @@ namespace WebOptimizationProject
             else
             {
                 var createdNewBranch = await _git.RunHubCommand($"checkout -b {Constants.FeatureName}");
-                if (createdNewBranch == 0)
+                if (createdNewBranch.ExitCode == 0)
                 {
                 }
                 else

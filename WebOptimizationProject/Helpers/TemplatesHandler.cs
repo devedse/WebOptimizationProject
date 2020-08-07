@@ -29,7 +29,7 @@ namespace WebOptimizationProject.Helpers
             var templateText = Templates.CommitInPullRequestMarkdownTemplate.Trim();
 
             templateText = templateText.Replace("{CommitDate}", commitDate);
-            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", ConstantsAndConfig.ValidExtensions));
+            templateText = templateText.Replace("{SupportedFileExtensions}", string.Join(" ", ConstantsFileExtensions.AllValidExtensions));
             templateText = templateText.Replace("{Version}", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
 
             var totalBytesBefore = optimizedFileResults.Sum(t => t.OriginalSize);

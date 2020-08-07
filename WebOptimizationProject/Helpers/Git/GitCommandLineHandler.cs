@@ -1,4 +1,5 @@
 ﻿using AdysTech.CredentialManager;
+using DeveCoolLib.ProcessAsTask;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +41,7 @@ namespace WebOptimizationProject.Helpers.Git
             return cloneingDir;
         }
 
-        public async Task<int> Commit(string message, string description)
+        public async Task<ProcessResults> Commit(string message, string description)
         {
             var stringForCommit = $"commit -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
 
@@ -49,7 +50,7 @@ namespace WebOptimizationProject.Helpers.Git
             return await RunHubCommand(stringForCommit);
         }
 
-        public async Task<int> PullRequest(string message, string description)
+        public async Task<ProcessResults> PullRequest(string message, string description)
         {
             var stringForPullRequest = $"pull-request -m \"{message}{Environment.NewLine}{Environment.NewLine}{description}\"";
 
@@ -63,33 +64,33 @@ namespace WebOptimizationProject.Helpers.Git
         //    return await WopProcessRunner.RunProcessAsync("git", command);
         //}
 
-        public async Task<int> RunHubCommand(string command)
+        public async Task<ProcessResults> RunHubCommand(string command)
         {
-            var envs = new List<EnvironmentVariable>() {
-                new EnvironmentVariable("GITHUB_TOKEN", _config.GitHubToken),
-                new EnvironmentVariable("GITHUB_USER", _config.GitHubUserName)
+            var envs = new Dictionary<string, string>()
+            {
+                {"GITHUB_TOKEN", _config.GitHubToken },
+                {"GITHUB_USER", _config.GitHubUserName }
             };
-            return await WopProcessRunner.RunProcessAsync("hub", command, envs);
+            return await ProcessRunner.RunAsyncAndLogToConsole("hub", command, envs);
         }
 
         public async Task<string> GetHeadBranch()
         {
-            var outList = new List<ProcessOutputLine>();
-            var result = await WopProcessRunner.RunProcessAsyncWithResults("git", "symbolic-ref refs/remotes/origin/HEAD", outList);
-            if (result != 0)
+            var result = await ProcessRunner.RunAsyncAndLogToConsole("git", "symbolic-ref refs/remotes/origin/HEAD");
+            if (result.ExitCode != 0)
             {
                 Console.WriteLine("Couldn't determine head branch, command failed.");
                 return null;
             }
-            var theName = outList.FirstOrDefault(t => t.Type == ProcessOutputLineType.Log && t.Txt.ToLowerInvariant().Contains("origin"));
-            if (theName == null || string.IsNullOrWhiteSpace(theName.Txt) || theName.Txt.Count(t => t == '/') == 0)
+            var theName = result.StandardOutput.FirstOrDefault(t => t.ToLowerInvariant().Contains("origin"));
+            if (theName == null || string.IsNullOrWhiteSpace(theName) || theName.Count(t => t == '/') == 0)
             {
                 Console.WriteLine($"Couldn't determine head branch, output isn't as expected: {theName}");
                 return null;
             }
 
-            var lio = theName.Txt.LastIndexOf('/');
-            var headBranchName = theName.Txt.Substring(lio + 1);
+            var lio = theName.LastIndexOf('/');
+            var headBranchName = theName.Substring(lio + 1);
             return headBranchName;
         }
     }

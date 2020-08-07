@@ -1,4 +1,5 @@
-﻿using DeveImageOptimizer.State;
+﻿using DeveImageOptimizer.ImageOptimization;
+using DeveImageOptimizer.State;
 using System;
 using System.Collections.Generic;
 using WebOptimizationProject.Helpers;
@@ -21,7 +22,7 @@ namespace WebOptimizationProject.Tests.Helpers
 
             foreach (var file in fileList)
             {
-                file.SetSuccess(50, TimeSpan.FromSeconds(5));
+                file.SetSuccess(50, TimeSpan.FromSeconds(5), ImageOptimizationLevel.Maximum);
             }
 
             //Act
