@@ -42,21 +42,19 @@ namespace WebOptimizationProject
             return orderedPubReposNames;
         }
 
-
-
-        public async Task GoOptimize(long repositoryId, string branchName = null)
+        public async Task GoOptimize(bool cleanupAfterwards, long repositoryId, string branchName = null)
         {
             var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryId);
-            await GoOptimize(repositoryInfo, branchName);
+            await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
         }
 
-        public async Task GoOptimize(string repositoryOwner, string repositoryName, string branchName = null)
+        public async Task GoOptimize(bool cleanupAfterwards, string repositoryOwner, string repositoryName, string branchName = null)
         {
             var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryOwner, repositoryName);
-            await GoOptimize(repositoryInfo, branchName);
+            await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
         }
 
-        public async Task GoOptimize(Repository repository, string branchName = null)
+        public async Task GoOptimize(bool cleanupAfterwards, Repository repository, string branchName = null)
         {
             var repositoryOwner = repository.Owner.Login;
             var repositoryName = repository.Name;
@@ -155,6 +153,14 @@ namespace WebOptimizationProject
             Console.WriteLine();
             Console.WriteLine($"{repositoryOwner}/{repositoryName} is optimized :)");
             Console.WriteLine();
+
+            if (cleanupAfterwards)
+            {
+                Console.WriteLine($"Cleaning up local files '{clonedRepo}'...");
+                Directory.SetCurrentDirectory(dirOfClonedRepos);
+                Directory.Delete(clonedRepo, true);
+                Console.WriteLine($"Directory {clonedRepo} removed.");
+            }
         }
 
         private async Task<IEnumerable<OptimizableFile>> GoOptimize(string dir, WopConfig config)
