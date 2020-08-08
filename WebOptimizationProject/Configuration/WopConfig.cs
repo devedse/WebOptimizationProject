@@ -10,6 +10,9 @@
             get => _githubusername;
             set => _githubusername = value.ToLowerInvariant();
         }
+
+        public string GitHubEmail { get; set; }
+
         public string GitHubToken { get; set; }
     }
 }

@@ -16,9 +16,12 @@ namespace WebOptimizationProject.Helpers.Git
         public GitCommandLineHandler(WopConfig config)
         {
             this._config = config;
+        }
 
+        public async Task ConfigureGitCredentials()
+        {
             Console.WriteLine($"Configuring git credentials in CredentialManager...");
-            var cred = new System.Net.NetworkCredential("PersonalAccessToken", config.GitHubToken);
+            var cred = new System.Net.NetworkCredential("PersonalAccessToken", _config.GitHubToken);
             var icred = cred.ToICredential();
 
             icred.TargetName = "git:https://github.com";
@@ -26,6 +29,11 @@ namespace WebOptimizationProject.Helpers.Git
 
             var result = icred.SaveCredential();
             Console.WriteLine($"Credential configuration result: {result}");
+
+            //git config --global user.email "you@example.com"
+            //git config --global user.name "Your Name"
+            await ProcessRunner.RunAsyncAndLogToConsole("git", $"config --global user.email \"{_config.GitHubEmail}\"");
+            await ProcessRunner.RunAsyncAndLogToConsole("git", $"config --global user.name \"{_config.GitHubUserName}\"");
         }
 
         public async Task<string> GitClone(string repositoriesDir, string userName, string repositoryName)

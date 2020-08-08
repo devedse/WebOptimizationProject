@@ -34,7 +34,6 @@ namespace WebOptimizationProject
 
         public async Task<IEnumerable<string>> ObtainRepositoriesForOwner(string repositoryOwner)
         {
-
             var pubrepos = await _gitOctoKitHandler.GitHubClient.Repository.GetAllForUser(repositoryOwner);
             var orderedPubRepos = pubrepos.OrderByDescending(t => t.StargazersCount);
 
@@ -58,6 +57,9 @@ namespace WebOptimizationProject
         {
             var repositoryOwner = repository.Owner.Login;
             var repositoryName = repository.Name;
+
+            var myUser = await _gitOctoKitHandler.GitHubClient.User.Current();
+            await _git.ConfigureGitCredentials();
 
             Console.WriteLine($"{repositoryOwner}/{repositoryName} is being optimized...");
             Console.WriteLine();
