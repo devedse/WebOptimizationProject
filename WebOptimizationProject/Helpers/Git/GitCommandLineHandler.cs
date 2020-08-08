@@ -71,6 +71,7 @@ namespace WebOptimizationProject.Helpers.Git
                 {"GITHUB_TOKEN", _config.GitHubToken },
                 {"GITHUB_USER", _config.GitHubUserName }
             };
+            Console.WriteLine($"Running: hub {command}");
             return await ProcessRunner.RunAsyncAndLogToConsole("hub", command, envs);
         }
 
