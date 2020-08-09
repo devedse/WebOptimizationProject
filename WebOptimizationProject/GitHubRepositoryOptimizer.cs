@@ -182,7 +182,7 @@ namespace WebOptimizationProject
             foreach (var file in Directory.GetFiles(path))
             {
                 FileAttributes attributes = File.GetAttributes(path);
-                if ((attributes & FileAttributes.Hidden) == FileAttributes.ReadOnly)
+                if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
                     // Show the file.
                     attributes = attributes & ~FileAttributes.ReadOnly;
