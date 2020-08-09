@@ -2,6 +2,7 @@
 using DeveCoolLib.Logging;
 using Octokit;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebOptimizationProject.Configuration;
@@ -24,6 +25,68 @@ namespace WebOptimizationProject
         public void Start()
         {
             var consoleMenu = new ConsoleMenu(ConsoleMenuType.StringInput);
+
+            consoleMenu.MenuOptions.Add(new ConsoleMenuOption("Remove all my forks and close their active PR's", new Action(() =>
+            {
+                var myUser = _gitOctoKitHandler.GitHubClient.User.Current().Result;
+                var myReposAll = _gitOctoKitHandler.GitHubClient.Repository.GetAllForCurrent().Result;
+                var myReposTemp = myReposAll.Where(t => t.Fork).ToList();
+
+                Console.WriteLine("Actions to execute:");
+
+                var prDict = new Dictionary<Repository, List<PullRequest>>();
+
+                foreach (var repo in myReposTemp)
+                {
+                    var prsHereList = new List<PullRequest>();
+                    var thisRepo = _gitOctoKitHandler.GitHubClient.Repository.Get(repo.Id).Result;
+                    prDict.Add(thisRepo, prsHereList);
+
+                    var prsHere = _gitOctoKitHandler.GitHubClient.PullRequest.GetAllForRepository(thisRepo.Parent.Id).Result;
+                    var prsFiltered = prsHere.Where(t => t.State.Value == ItemState.Open && t.User.Id == myUser.Id).ToList();
+                    foreach (var pr in prsHere)
+                    {
+                        Console.WriteLine($"\tClose:\t{pr.HtmlUrl} ({pr.State})");
+                        prsHereList.Add(pr);
+                    }
+
+                    Console.WriteLine($"\tDelete:\t{repo.FullName}");
+                }
+
+                var consMenuRemoveRepos = new ConsoleMenu(ConsoleMenuType.StringInput);
+
+                consMenuRemoveRepos.MenuOptions.Add(new ConsoleMenuOption("Yes", new Action(() =>
+                {
+                    foreach (var kvp in prDict)
+                    {
+                        var repo = kvp.Key;
+                        foreach (var pr in kvp.Value)
+                        {
+                            Console.Write($"Closing: {pr.HtmlUrl} ");
+                            var up = new PullRequestUpdate()
+                            {
+                                State = ItemState.Closed
+                            };
+                            _gitOctoKitHandler.GitHubClient.PullRequest.Update(repo.Parent.Id, pr.Number, up).Wait();
+                            Console.WriteLine("Done");
+                        }
+
+                        Console.Write($"Removing: {repo.FullName} ");
+                        _gitOctoKitHandler.GitHubClient.Repository.Delete(repo.Id).Wait();
+                        Console.WriteLine("Done");
+                    }
+                })));
+
+                consMenuRemoveRepos.MenuOptions.Add(new ConsoleMenuOption("No", new Action(() =>
+                {
+
+                })));
+
+                Console.WriteLine();
+                Console.WriteLine("Are you sure you want to remove all these repositories?");
+                consMenuRemoveRepos.RenderMenu();
+                consMenuRemoveRepos.WaitForResult();
+            })));
 
             consoleMenu.MenuOptions.Add(new ConsoleMenuOption("Remove all my forks", new Action(() =>
             {
