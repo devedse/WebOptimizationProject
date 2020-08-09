@@ -181,7 +181,17 @@ namespace WebOptimizationProject
         {
             foreach (var file in Directory.GetFiles(path))
             {
+                FileAttributes attributes = File.GetAttributes(path);
+                if ((attributes & FileAttributes.Hidden) == FileAttributes.ReadOnly)
+                {
+                    // Show the file.
+                    attributes = attributes & ~FileAttributes.ReadOnly;
+                    File.SetAttributes(path, attributes);
+                    Console.WriteLine($"Removing readonly flag for: {path}");
+                }
+
                 Console.WriteLine($"Deleting file: {file}");
+
                 File.Delete(file);
             }
 
