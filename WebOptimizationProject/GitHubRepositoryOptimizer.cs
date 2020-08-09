@@ -160,7 +160,8 @@ namespace WebOptimizationProject
             {
                 Console.WriteLine($"Cleaning up local files '{clonedRepo}'...");
                 Directory.SetCurrentDirectory(dirOfClonedRepos);
-                Directory.Delete(clonedRepo, true);
+                CleanupRecursively(clonedRepo);
+                //Directory.Delete(clonedRepo, true);
                 Console.WriteLine($"Directory {clonedRepo} removed.");
             }
         }
@@ -174,6 +175,23 @@ namespace WebOptimizationProject
             var optimizedFileResults = await fileProcessor.ProcessDirectory(dir);
 
             return optimizedFileResults;
+        }
+
+        private void CleanupRecursively(string path)
+        {
+            foreach (var file in Directory.GetFiles(path))
+            {
+                Console.WriteLine($"Deleting file: {file}");
+                File.Delete(file);
+            }
+
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                CleanupRecursively(dir);
+            }
+
+            Console.WriteLine($"Deleting dir: {path}");
+            Directory.Delete(path);
         }
     }
 }
