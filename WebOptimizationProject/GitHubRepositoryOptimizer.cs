@@ -177,21 +177,18 @@ namespace WebOptimizationProject
             return optimizedFileResults;
         }
 
-        private void CleanupRecursively(string path)
+        private static void CleanupRecursively(string path)
         {
             foreach (var file in Directory.GetFiles(path))
             {
-                FileAttributes attributes = File.GetAttributes(path);
-                if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.IsReadOnly)
                 {
-                    // Show the file.
-                    attributes = attributes & ~FileAttributes.ReadOnly;
-                    File.SetAttributes(path, attributes);
-                    Console.WriteLine($"Removing readonly flag for: {path}");
+                    fileInfo.IsReadOnly = false;
+                    Console.WriteLine($"Removing readonly flag for: {file}");
                 }
 
                 Console.WriteLine($"Deleting file: {file}");
-
                 File.Delete(file);
             }
 
