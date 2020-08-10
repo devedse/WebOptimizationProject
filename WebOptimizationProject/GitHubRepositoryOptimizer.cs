@@ -41,16 +41,16 @@ namespace WebOptimizationProject
             return orderedPubReposNames;
         }
 
-        public async Task GoOptimize(bool cleanupAfterwards, long repositoryId, string branchName = null)
+        public async Task<WopResult> GoOptimize(bool cleanupAfterwards, long repositoryId, string branchName = null)
         {
             var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryId);
-            await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
+            return await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
         }
 
-        public async Task GoOptimize(bool cleanupAfterwards, string repositoryOwner, string repositoryName, string branchName = null)
+        public async Task<WopResult> GoOptimize(bool cleanupAfterwards, string repositoryOwner, string repositoryName, string branchName = null)
         {
             var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryOwner, repositoryName);
-            await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
+            return await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
         }
 
         public async Task<WopResult> GoOptimize(bool cleanupAfterwards, Repository repository, string branchName = null)
