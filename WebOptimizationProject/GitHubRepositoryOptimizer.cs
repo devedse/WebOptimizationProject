@@ -53,7 +53,7 @@ namespace WebOptimizationProject
             await GoOptimize(cleanupAfterwards, repositoryInfo, branchName);
         }
 
-        public async Task GoOptimize(bool cleanupAfterwards, Repository repository, string branchName = null)
+        public async Task<WopResult> GoOptimize(bool cleanupAfterwards, Repository repository, string branchName = null)
         {
             var repositoryOwner = repository.Owner.Login;
             var repositoryName = repository.Name;
@@ -76,93 +76,109 @@ namespace WebOptimizationProject
             var clonedRepo = await _git.GitClone(dirOfClonedRepos, repositoryOwner, repositoryName);
             Directory.SetCurrentDirectory(clonedRepo);
 
-            var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryOwner, repositoryName);
-
-            if (branchName == null)
+            try
             {
-                branchName = repositoryInfo.DefaultBranch;
+                var repositoryInfo = await _gitOctoKitHandler.GitHubClient.Repository.Get(repositoryOwner, repositoryName);
+
                 if (branchName == null)
                 {
-                    throw new Exception("ERROR, couldn't determine branchname");
+                    branchName = repositoryInfo.DefaultBranch;
+                    if (branchName == null)
+                    {
+                        throw new Exception("ERROR, couldn't determine branchname");
+                    }
                 }
-            }
 
-            await _git.RunHubCommand("fork");
+                await _git.RunHubCommand("fork");
 
-            await _git.RunHubCommand($"remote set-url {_wopConfig.GitHubUserName} https://github.com/{_wopConfig.GitHubUserName}/{repositoryName}.git");
+                await _git.RunHubCommand($"remote set-url {_wopConfig.GitHubUserName} https://github.com/{_wopConfig.GitHubUserName}/{repositoryName}.git");
 
-            //Fetch everything in my repository
-            await _git.RunHubCommand("fetch --all");
+                //Fetch everything in my repository
+                await _git.RunHubCommand("fetch --all");
 
-            //Go to master
-            await _git.RunHubCommand($"checkout {_wopConfig.GitHubUserName}/{branchName}");
-            await _git.RunHubCommand($"merge --strategy-option=theirs origin/{branchName}");
-            await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} HEAD:{branchName}");
+                //Go to master
+                await _git.RunHubCommand($"checkout {_wopConfig.GitHubUserName}/{branchName}");
+                await _git.RunHubCommand($"merge --strategy-option=theirs origin/{branchName}");
+                await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} HEAD:{branchName}");
 
-            var wasAbleToAddTrackedBranch = await _git.RunHubCommand($"checkout --track -b {Constants.FeatureName} {_wopConfig.GitHubUserName}/{Constants.FeatureName}");
+                var wasAbleToAddTrackedBranch = await _git.RunHubCommand($"checkout --track -b {Constants.FeatureName} {_wopConfig.GitHubUserName}/{Constants.FeatureName}");
 
-            if (wasAbleToAddTrackedBranch.ExitCode == 0)
-            {
-                await _git.RunHubCommand($"merge --strategy-option=theirs {_wopConfig.GitHubUserName}/{branchName}");
-                await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} {Constants.FeatureName} -u");
-            }
-            else
-            {
-                var createdNewBranch = await _git.RunHubCommand($"checkout -b {Constants.FeatureName}");
-                if (createdNewBranch.ExitCode == 0)
+                if (wasAbleToAddTrackedBranch.ExitCode == 0)
                 {
+                    await _git.RunHubCommand($"merge --strategy-option=theirs {_wopConfig.GitHubUserName}/{branchName}");
+                    await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} {Constants.FeatureName} -u");
                 }
                 else
                 {
-                    await _git.RunHubCommand($"checkout {Constants.FeatureName}");
-                    await _git.RunHubCommand($"merge --strategy-option=theirs {_wopConfig.GitHubUserName}/{branchName}");
-                }
-                await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} {Constants.FeatureName} -u");
-            }
-
-            var optimizedFileResults = await GoOptimize(clonedRepo, _wopConfig);
-            //var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
-
-            await _git.RunHubCommand("add .");
-
-            var descriptionForCommit = TemplatesHandler.GetDescriptionForCommit();
-            await _git.Commit("Wop optimized this repository", descriptionForCommit);
-            await _git.RunHubCommand($"push");
-
-            var descriptionForPullRequest = TemplatesHandler.GetDescriptionForPullRequest();
-
-            //Only create pull request if there were actually any successful optimizations
-            if (optimizedFileResults.Any(t => t.OptimizationResult == OptimizationResult.Success && t.OriginalSize > t.OptimizedSize))
-            {
-                PullRequest obtainedPullRequest = await _gitOctoKitHandler.GetPullRequest(repositoryOwner, repositoryName);
-
-                if (obtainedPullRequest == null)
-                {
-                    var pr = new NewPullRequest("The Web Optimization Project has optimized your repository!", $"{_wopConfig.GitHubUserName}:{Constants.FeatureName}", branchName)
+                    var createdNewBranch = await _git.RunHubCommand($"checkout -b {Constants.FeatureName}");
+                    if (createdNewBranch.ExitCode == 0)
                     {
-                        Body = descriptionForPullRequest
-                    };
-                    obtainedPullRequest = await _gitOctoKitHandler.GitHubClient.PullRequest.Create(repositoryOwner, repositoryName, pr);
+                    }
+                    else
+                    {
+                        await _git.RunHubCommand($"checkout {Constants.FeatureName}");
+                        await _git.RunHubCommand($"merge --strategy-option=theirs {_wopConfig.GitHubUserName}/{branchName}");
+                    }
+                    await _git.RunHubCommand($"push {_wopConfig.GitHubUserName} {Constants.FeatureName} -u");
                 }
-                Console.WriteLine($"Using PR: {obtainedPullRequest.Url}");
 
-                var descriptionForCommitInPr = TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, DateTime.UtcNow.ToString());
-                Console.WriteLine($"Creating comment on pr with length {descriptionForCommitInPr.Length}...");
-                var createdComment = await _gitOctoKitHandler.GitHubClient.Issue.Comment.Create(repositoryOwner, repositoryName, obtainedPullRequest.Number, descriptionForCommitInPr);
-                Console.WriteLine($"Comment created: {createdComment.Url}");
+                var optimizedFileResults = await GoOptimize(clonedRepo, _wopConfig);
+                //var optimizedFileResults = await GoOptimizeStub(clonedRepo, config);
+
+                await _git.RunHubCommand("add .");
+
+                var descriptionForCommit = TemplatesHandler.GetDescriptionForCommit();
+                await _git.Commit("Wop optimized this repository", descriptionForCommit);
+                await _git.RunHubCommand($"push");
+
+                var descriptionForPullRequest = TemplatesHandler.GetDescriptionForPullRequest();
+
+                var successfulOptimizations = optimizedFileResults.Any(t => t.OptimizationResult == OptimizationResult.Success && t.OriginalSize > t.OptimizedSize);
+
+                var retval = new WopResult()
+                {
+                    OptimizedFiles = optimizedFileResults
+                };
+
+                //Only create pull request if there were actually any successful optimizations
+                if (successfulOptimizations)
+                {
+                    PullRequest obtainedPullRequest = await _gitOctoKitHandler.GetPullRequest(repositoryOwner, repositoryName);
+
+                    if (obtainedPullRequest == null)
+                    {
+                        var pr = new NewPullRequest("The Web Optimization Project has optimized your repository!", $"{_wopConfig.GitHubUserName}:{Constants.FeatureName}", branchName)
+                        {
+                            Body = descriptionForPullRequest
+                        };
+                        obtainedPullRequest = await _gitOctoKitHandler.GitHubClient.PullRequest.Create(repositoryOwner, repositoryName, pr);
+                    }
+                    Console.WriteLine($"Using PR: {obtainedPullRequest.Url}");
+
+                    var descriptionForCommitInPr = TemplatesHandler.GetCommitDescriptionForPullRequest(clonedRepo, branchName, optimizedFileResults, DateTime.UtcNow.ToString());
+                    Console.WriteLine($"Creating comment on pr with length {descriptionForCommitInPr.Length}...");
+                    var createdComment = await _gitOctoKitHandler.GitHubClient.Issue.Comment.Create(repositoryOwner, repositoryName, obtainedPullRequest.Number, descriptionForCommitInPr);
+                    Console.WriteLine($"Comment created: {createdComment.Url}");
+
+                    retval.CreatedPullRequest = obtainedPullRequest;
+                }
+
+                Console.WriteLine();
+                Console.WriteLine($"{repositoryOwner}/{repositoryName} is optimized :)");
+                Console.WriteLine();
+
+                return retval;
             }
-
-            Console.WriteLine();
-            Console.WriteLine($"{repositoryOwner}/{repositoryName} is optimized :)");
-            Console.WriteLine();
-
-            if (cleanupAfterwards)
+            finally
             {
-                Console.WriteLine($"Cleaning up local files '{clonedRepo}'...");
-                Directory.SetCurrentDirectory(dirOfClonedRepos);
-                CleanupRecursively(clonedRepo);
-                //Directory.Delete(clonedRepo, true);
-                Console.WriteLine($"Directory {clonedRepo} removed.");
+                if (cleanupAfterwards)
+                {
+                    Console.WriteLine($"Cleaning up local files '{clonedRepo}'...");
+                    Directory.SetCurrentDirectory(dirOfClonedRepos);
+                    CleanupRecursively(clonedRepo);
+                    //Directory.Delete(clonedRepo, true);
+                    Console.WriteLine($"Directory {clonedRepo} removed.");
+                }
             }
         }
 
