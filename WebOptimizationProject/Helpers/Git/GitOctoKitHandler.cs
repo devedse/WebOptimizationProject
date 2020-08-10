@@ -32,6 +32,59 @@ namespace WebOptimizationProject.Helpers.Git
             return githubclient;
         }
 
+        public async Task<List<IssueAndRepo>> GetAllMyOpenPrs()
+        {
+            var totalIssueList = new List<Issue>();
+
+            int page = 1;
+            while (true)
+            {
+                var searchIssuesRequest = new SearchIssuesRequest()
+                {
+                    Page = page,
+                    PerPage = 100,
+                    Author = _config.GitHubUserName,
+                    Type = IssueTypeQualifier.PullRequest,
+                    State = ItemState.Open,
+                    Head = Constants.FeatureName
+                };
+
+                var pullRequestsThisPage = await GitHubClient.Search.SearchIssues(searchIssuesRequest);
+
+                if (pullRequestsThisPage.IncompleteResults)
+                {
+                    throw new Exception("Search result was incomplete");
+                }
+
+                totalIssueList.AddRange(pullRequestsThisPage.Items);
+
+                if (pullRequestsThisPage.TotalCount != 100)
+                {
+                    break;
+                }
+            }
+
+            var issueAndRepoList = totalIssueList.Select(t =>
+            {
+                var start = "github.com/repos";
+                var urlShortened = t.Url.Substring(t.Url.IndexOf(start) + start.Length);
+                var split = urlShortened.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                var repoOwner = split[0];
+                var repoName = split[1];
+
+                var issueAndRepo = new IssueAndRepo()
+                {
+                    Issue = t,
+                    RepoOwner = repoOwner,
+                    RepoName = repoName
+                };
+
+                return issueAndRepo;
+            });
+
+            return issueAndRepoList.ToList();
+        }
+
         public async Task<PullRequest> GetPullRequest(string repositoryOwner, string repositoryName)
         {
             Console.WriteLine($"Getting pullrequest with RepoOwner: {repositoryOwner} RepoName: {repositoryName}");
