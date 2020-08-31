@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using WebOptimizationProject.Resources;
 
 namespace WebOptimizationProject.Helpers
@@ -82,7 +83,7 @@ namespace WebOptimizationProject.Helpers
                 var relativeGitPath = RelativeGitPathHelper.GetRelativeGitPath(clonedRepoPath, fileResult.Path, branchName);
                 if (relativeGitPath != null)
                 {
-                    fileName = $"[{fileName}]({relativeGitPath})";
+                    fileName = $"[{fileName}]({HttpUtility.UrlPathEncode(relativeGitPath)})";
                 }
 
                 var originalSize = ValuesToStringHelper.BytesToString(fileResult.OriginalSize);
