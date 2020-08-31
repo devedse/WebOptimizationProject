@@ -1,5 +1,4 @@
-﻿using AdysTech.CredentialManager;
-using DeveCoolLib.ProcessAsTask;
+﻿using DeveCoolLib.ProcessAsTask;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,20 +14,25 @@ namespace WebOptimizationProject.Helpers.Git
 
         public GitCommandLineHandler(WopConfig config)
         {
-            this._config = config;
+            _config = config;
         }
 
         public async Task ConfigureGitCredentials()
         {
-            Console.WriteLine($"Configuring git credentials in CredentialManager...");
-            var cred = new System.Net.NetworkCredential("PersonalAccessToken", _config.GitHubToken);
-            var icred = cred.ToICredential();
+            //We don't do this anymore, we just clone by doing this: https://{username}:{password}@github.com/{username}/project.git
 
-            icred.TargetName = "git:https://github.com";
-            icred.Persistance = Persistance.LocalMachine;
+            //AdysTech.CredentialManager
+            //Console.WriteLine($"Configuring git credentials in CredentialManager...");
+            //var cred = new System.Net.NetworkCredential("PersonalAccessToken", _config.GitHubToken);
+            //var icred = cred.ToICredential();
 
-            var result = icred.SaveCredential();
-            Console.WriteLine($"Credential configuration result: {result}");
+            //icred.TargetName = "git:https://github.com";
+            //icred.Persistance = Persistance.LocalMachine;
+
+            //var result = icred.SaveCredential();
+            //Console.WriteLine($"Credential configuration result: {result}");
+
+
 
             //git config --global user.email "you@example.com"
             //git config --global user.name "Your Name"
@@ -42,7 +46,8 @@ namespace WebOptimizationProject.Helpers.Git
             var cloneingDir = Path.Combine(repositoriesDir, repositoryName);
             //await DirectoryHelper.DeleteDirectory(cloneingDir);
 
-            var totalUrl = $"https://github.com/{userName}/{repositoryName}.git";
+            var token = _config.GitHubToken.Replace("@", "%40");
+            var totalUrl = $"https://{_config.GitHubUserName}:{token}@github.com/{userName}/{repositoryName}.git";
 
             await RunHubCommand($"clone {totalUrl}");
 
