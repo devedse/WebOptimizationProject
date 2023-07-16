@@ -36,8 +36,8 @@ namespace WebOptimizationProject.Helpers.Git
 
             //git config --global user.email "you@example.com"
             //git config --global user.name "Your Name"
-            await ProcessRunner.RunAsyncAndLogToConsole("git", $"config --global user.email \"{_config.GitHubEmail}\"");
-            await ProcessRunner.RunAsyncAndLogToConsole("git", $"config --global user.name \"{_config.GitHubUserName}\"");
+            await ProcessRunner.RunAsync("git", $"config --global user.email \"{_config.GitHubEmail}\"", true);
+            await ProcessRunner.RunAsync("git", $"config --global user.name \"{_config.GitHubUserName}\"", true);
         }
 
         public async Task<string> GitClone(string repositoriesDir, string userName, string repositoryName)
@@ -85,12 +85,12 @@ namespace WebOptimizationProject.Helpers.Git
                 {"GITHUB_USER", _config.GitHubUserName }
             };
             Console.WriteLine($"Running: hub {command}");
-            return await ProcessRunner.RunAsyncAndLogToConsole("hub", command, envs);
+            return await ProcessRunner.RunAsync("hub", command, envs, true);
         }
 
         public async Task<string> GetHeadBranch()
         {
-            var result = await ProcessRunner.RunAsyncAndLogToConsole("git", "symbolic-ref refs/remotes/origin/HEAD");
+            var result = await ProcessRunner.RunAsync("git", "symbolic-ref refs/remotes/origin/HEAD", true);
             if (result.ExitCode != 0)
             {
                 Console.WriteLine("Couldn't determine head branch, command failed.");
