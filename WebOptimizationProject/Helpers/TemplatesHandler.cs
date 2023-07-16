@@ -83,7 +83,7 @@ namespace WebOptimizationProject.Helpers
                 var relativeGitPath = RelativeGitPathHelper.GetRelativeGitPath(clonedRepoPath, fileResult.Path, branchName);
                 if (relativeGitPath != null)
                 {
-                    fileName = $"[{fileName}]({HttpUtility.UrlPathEncode(relativeGitPath)})";
+                    fileName = $"[{fileName}]({HttpUtility.UrlPathEncode(relativeGitPath).Replace("#", "%23")})";
                 }
 
                 var originalSize = ValuesToStringHelper.BytesToString(fileResult.OriginalSize);
