@@ -31,8 +31,9 @@ namespace WebOptimizationProject.Runner
                 MaxDegreeOfParallelism = Environment.ProcessorCount
             };
 
-            //var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig, deveImageOptimizerConfiguration, new WopProgressReporter());
-            //await githubRepositoryOptimizer.GoOptimize("WebOptimizationProject", "TestRepo1");
+            var githubRepositoryOptimizer = new GitHubRepositoryOptimizer(wopConfig, deveImageOptimizerConfiguration, new WopProgressReporter());
+            //await githubRepositoryOptimizer.GoOptimize(true, "e1ven", "Robohash");
+            await githubRepositoryOptimizer.GoOptimize(true, "walkxcode", "dashboard-icons");
             //await githubRepositoryOptimizer.GoOptimize(282345207L);
 
 

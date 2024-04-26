@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net7.0</TargetFramework>
+	  <TargetFramework>net8.0</TargetFramework>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -14,10 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeveCoolLib" Version="1.0.565" />
+    <PackageReference Include="DeveCoolLib" Version="1.0.582" />
     <PackageReference Include="DeveImageOptimizer" Version="1.0.651" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Octokit" Version="7.0.1" />
+    <PackageReference Include="Octokit" Version="11.0.1" />
   </ItemGroup>
 
   <ItemGroup>
